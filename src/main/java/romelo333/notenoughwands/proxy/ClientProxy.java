@@ -1,4 +1,4 @@
-package romelo333.mocs.proxy;
+package romelo333.notenoughwands.proxy;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

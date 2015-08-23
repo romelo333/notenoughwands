@@ -1,13 +1,13 @@
 [
 {
-  "modid": "deepresonance",
-  "name": "DeepResonance",
-  "description": "Power generation based on resonanting crystals",
+  "modid": "NotEnoughWands",
+  "name": "Not Enough Wands",
+  "description": "Wands, wands, and more wands",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["McJty"],
+  "authorList": ["romelo333", "McJty"],
   "credits": "",
   "logoFile": "",
   "screenshots": [],
