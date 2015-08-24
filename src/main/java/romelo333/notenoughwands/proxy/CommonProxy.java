@@ -4,6 +4,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
+import romelo333.notenoughwands.ModItems;
 
 public abstract class CommonProxy {
 
@@ -14,7 +15,7 @@ public abstract class CommonProxy {
 //        readMainConfig();
 //        DRMessages.registerNetworkMessages();
 //        DRFluidRegistry.preInitFluids();
-//        ModItems.init();
+        ModItems.init();
 //        ModBlocks.init();
 //        ModCrafting.init();
 //        WorldGen.init();

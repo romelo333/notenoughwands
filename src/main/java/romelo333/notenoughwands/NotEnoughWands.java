@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.waila.network.NetworkHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +18,7 @@ import romelo333.notenoughwands.proxy.CommonProxy;
 
 import java.io.File;
 
-@Mod(modid = NotEnoughWands.MODID, name="NotEnoughWands", dependencies =
+@Mod(modid = NotEnoughWands.MODID, name="Not Enough Wands", dependencies =
         "required-after:Forge@["+ NotEnoughWands.MIN_FORGE_VER+",)",
         version = NotEnoughWands.VERSION)
 public class NotEnoughWands {
@@ -28,7 +29,7 @@ public class NotEnoughWands {
     @SidedProxy(clientSide="romelo333.notenoughwands.proxy.ClientProxy", serverSide="romelo333.notenoughwands.proxy.ServerProxy")
     public static CommonProxy proxy;
 
-    @Mod.Instance("deepresonance")
+    @Mod.Instance("NotEnoughWands")
     public static NotEnoughWands instance;
     public static Logger logger;
     public static File mainConfigDir;
@@ -36,11 +37,11 @@ public class NotEnoughWands {
     public static Configuration config;
     public static NetworkHandler networkHandler;
 
-    public static CreativeTabs tabMocs = new CreativeTabs("Mocs") {
+    public static CreativeTabs tabNew = new CreativeTabs("NotEnoughWands") {
         @Override
         @SideOnly(Side.CLIENT)
         public Item getTabIconItem() {
-            return Item.getItemFromBlock(Blocks.cobblestone);
+            return Items.stick;
         }
     };
 
