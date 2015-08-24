@@ -3,20 +3,15 @@ package romelo333.notenoughwands.Items;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SwappingWand extends Item {
-    public SwappingWand() {
-        setMaxStackSize(1);
-    }
+public class SwappingWand extends GenericWand {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
@@ -28,9 +23,8 @@ public class SwappingWand extends Item {
             int id = compound.getInteger("block");
             Block block = (Block)Block.blockRegistry.getObjectById(id);
             int meta = compound.getInteger("meta");
-            ItemStack s = new ItemStack(block,1,meta);
-            String name = s.getDisplayName();
-            list.add(EnumChatFormatting.BLUE+"Selected block: "+name);
+            String name = getBlockName(block, meta);
+            list.add(EnumChatFormatting.GREEN+"Selected block: "+name);
         }
     }
 
@@ -38,20 +32,18 @@ public class SwappingWand extends Item {
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
             if (player.isSneaking()){
-                selectBlock(stack, world, x, y, z);
+                selectBlock(stack, player, world, x, y, z);
             } else {
                 placeBlock(stack, player, world, x, y, z);
-
             }
         }
-        System.out.println("SwappingWand.onItemUse");
         return true;
     }
 
     private void placeBlock(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
         NBTTagCompound tagCompound = stack.getTagCompound();
         if (tagCompound == null){
-            player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED+"First select a block by sneaking"));
+            error(player, "First select a block by sneaking");
             return;
         }
         int id = tagCompound.getInteger("block");
@@ -63,47 +55,24 @@ public class SwappingWand extends Item {
             player.inventory.addItemStackToInventory(new ItemStack(oldblock,1,oldmeta));
             world.setBlock(x, y, z, block, meta, 2);
             player.openContainer.detectAndSendChanges();
-        }else{
-            player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED+"You don't have the right block"));
-        }
-
-    }
-
-    private void selectBlock(ItemStack stack, World world, int x, int y, int z) {
-        Block block = world.getBlock(x, y, z);
-        NBTTagCompound tagCompound = stack.getTagCompound();
-        if (tagCompound == null){
-            tagCompound = new NBTTagCompound();
-            stack.setTagCompound(tagCompound);
-        }
-        int id = Block.blockRegistry.getIDForObject(block);
-        int meta = world.getBlockMetadata(x,y,z);
-        tagCompound.setInteger("block",id);
-        tagCompound.setInteger("meta",meta);
-    }
-
-    public boolean consumeInventoryItem(Item item, int meta, InventoryPlayer inv) {
-        int i = this.finditem(item, meta, inv);
-
-        if (i < 0) {
-            return false;
         } else {
-            if (--inv.mainInventory[i].stackSize <= 0) {
-                inv.mainInventory[i] = null;
-            }
-
-            return true;
+            error(player, "You don't have the right block");
         }
     }
 
-    private int finditem(Item item, int meta, InventoryPlayer inv) {
-        for (int i = 0; i < inv.mainInventory.length; ++i) {
-            if (inv.mainInventory[i] != null && inv.mainInventory[i].getItem() == item && meta == inv.mainInventory[i].getItemDamage()) {
-                return i;
-            }
+    private void selectBlock(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
+        Block block = world.getBlock(x, y, z);
+        int meta = world.getBlockMetadata(x, y, z);
+        NBTTagCompound tagCompound = getTagCompound(stack);
+        String name = getBlockName(block, meta);
+        if (name == null) {
+            error(player, "You cannot select this block!");
+        } else {
+            int id = Block.blockRegistry.getIDForObject(block);
+            tagCompound.setInteger("block", id);
+            tagCompound.setInteger("meta", meta);
+            notify(player, "Selected block: " + name);
         }
-
-        return -1;
     }
 
 }
