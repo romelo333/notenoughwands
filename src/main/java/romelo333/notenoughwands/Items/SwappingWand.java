@@ -14,6 +14,10 @@ import java.util.List;
 
 public class SwappingWand extends GenericWand {
 
+    public SwappingWand(String name, String texture) {
+        super(name, texture);
+    }
+
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);

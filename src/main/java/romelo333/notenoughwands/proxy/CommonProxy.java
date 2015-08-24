@@ -4,56 +4,45 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.Level;
+import romelo333.Config;
 import romelo333.notenoughwands.ModItems;
+import romelo333.notenoughwands.NotEnoughWands;
 
 public abstract class CommonProxy {
 
     private Configuration mainConfig;
 
     public void preInit(FMLPreInitializationEvent e) {
-//        mainConfig = DeepResonance.config;
-//        readMainConfig();
-//        DRMessages.registerNetworkMessages();
-//        DRFluidRegistry.preInitFluids();
+        mainConfig = NotEnoughWands.config;
         ModItems.init();
-//        ModBlocks.init();
+        readMainConfig();
 //        ModCrafting.init();
-//        WorldGen.init();
     }
 
     private void readMainConfig() {
-//        Configuration cfg = mainConfig;
-//        try {
-//            cfg.load();
-//            cfg.addCustomCategoryComment(WorldGenConfiguration.CATEGORY_WORLDGEN, "Configuration for wodlgen");
-//            cfg.addCustomCategoryComment(GeneratorConfiguration.CATEGORY_GENERATOR, "Configuration for the generator multiblock");
-//            cfg.addCustomCategoryComment(ResonatingCrystalConfiguration.CATEGORY_CRYSTALS, "Configuration for the crystals");
-//            cfg.addCustomCategoryComment(RadiationConfiguration.CATEGORY_RADIATION, "Configuration for the radiation");
-//            WorldGenConfiguration.init(cfg);
-//            GeneratorConfiguration.init(cfg);
-//            ResonatingCrystalConfiguration.init(cfg);
-//            RadiationConfiguration.init(cfg);
-//        } catch (Exception e1) {
-//            FMLLog.log(Level.ERROR, e1, "Problem loading config file!");
-//        } finally {
-//            if (mainConfig.hasChanged()) {
-//                mainConfig.save();
-//            }
-//        }
+        Configuration cfg = mainConfig;
+        try {
+            cfg.load();
+            cfg.addCustomCategoryComment(Config.CATEGORY_WANDS, "Configuration for wodlgen");
+            Config.init(cfg);
+        } catch (Exception e1) {
+            NotEnoughWands.logger.log(Level.ERROR, "Problem loading config file!", e1);
+        } finally {
+            if (mainConfig.hasChanged()) {
+                mainConfig.save();
+            }
+        }
     }
 
     public void init(FMLInitializationEvent e) {
-//        NetworkRegistry.INSTANCE.registerGuiHandler(DeepResonance.instance, new GuiProxy());
-//        FMLCommonHandler.instance().bus().register(WorldTickHandler.instance);
-//        FMLCommonHandler.instance().bus().register(new RadiationTickEvent());
     }
 
     public void postInit(FMLPostInitializationEvent e) {
-//        if (mainConfig.hasChanged()) {
-//            mainConfig.save();
-//        }
-//        mainConfig = null;
-//        WrenchChecker.init();
+        if (mainConfig.hasChanged()) {
+            mainConfig.save();
+        }
+        mainConfig = null;
     }
 
 }
