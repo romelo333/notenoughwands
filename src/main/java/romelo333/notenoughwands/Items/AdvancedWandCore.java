@@ -5,8 +5,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 import romelo333.notenoughwands.NotEnoughWands;
 
-public class WandCore extends Item {
-    public WandCore (String name, String texture) {
+public class AdvancedWandCore extends Item {
+    public AdvancedWandCore(String name, String texture) {
         setMaxStackSize(64);
         setUnlocalizedName(name);
         setCreativeTab(NotEnoughWands.tabNew);

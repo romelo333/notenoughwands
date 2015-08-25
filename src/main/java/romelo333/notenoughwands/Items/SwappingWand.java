@@ -18,7 +18,7 @@ import java.util.List;
 public class SwappingWand extends GenericWand {
 
     public SwappingWand(String name, String texture) {
-        super(name, texture);
+        setup(name, texture).xpUsage(10).availability(AVAILABILITY_ADVANCED);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SwappingWand extends GenericWand {
     }
 
     @Override
-    protected void setupCraftingInt() {
-        GameRegistry.addRecipe(new ItemStack(this),"rg ","gw ","  w",'r', Blocks.redstone_block, 'g',Blocks.glowstone, 'w', ModItems.wandCore);
+    protected void setupCraftingInt(Item wandcore) {
+        GameRegistry.addRecipe(new ItemStack(this),"rg ","gw ","  w",'r', Blocks.redstone_block, 'g',Blocks.glowstone, 'w', wandcore);
     }
 }

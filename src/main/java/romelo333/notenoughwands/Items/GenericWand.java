@@ -7,24 +7,58 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import romelo333.notenoughwands.Config;
+import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
 import romelo333.notenoughwands.varia.Tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GenericWand extends Item {
-    protected int needsxp = 10;
+    protected int needsxp = 0;
     protected int needsrf = 0;
     protected int maxrf = 0;
     protected int maxdurability = 0;
-    protected int availability = 2;     // 0 means not available, 1 means available but not craftable, 2 means craftable
+    protected int availability = AVAILABILITY_NORMAL;
 
-    public GenericWand(String name, String texture) {
+    public static int AVAILABILITY_NOT = 0;
+    public static int AVAILABILITY_CREATIVE = 1;
+    public static int AVAILABILITY_ADVANCED = 2;
+    public static int AVAILABILITY_NORMAL = 3;
+
+    private static List<GenericWand> wands = new ArrayList<GenericWand>();
+
+    protected GenericWand setup(String name, String texture) {
         if (availability > 0) {
             setMaxStackSize(1);
             setUnlocalizedName(name);
             setCreativeTab(NotEnoughWands.tabNew);
             setTextureName(NotEnoughWands.MODID + ":" + texture);
             GameRegistry.registerItem(this, name);
+            wands.add(this);
         }
+        return this;
+    }
+
+    GenericWand xpUsage(int xp) {
+        this.needsxp = xp;
+        return this;
+    }
+
+    GenericWand rfUsage(int maxrf, int rf) {
+        this.maxrf = maxrf;
+        this.needsrf = rf;
+        return this;
+    }
+
+    GenericWand durabilityUsage(int maxdurability) {
+        this.maxdurability = maxdurability;
+        return this;
+    }
+
+    GenericWand availability(int availability) {
+        this.availability = availability;
+        return this;
     }
 
     public void initConfig(Configuration cfg) {
@@ -32,7 +66,7 @@ public class GenericWand extends Item {
         needsrf = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_needsrf", needsrf, "How much RF this wand should consume on usage").getInt();
         maxrf = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxrf", maxrf, "Maximum RF this wand can hold").getInt();
         maxdurability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxdurability", maxdurability, "Maximum durability for this wand").getInt();
-        availability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_availability", availability, "Is this wand available? (0=no, 1=yes but not craftable, 2=craftable").getInt();
+        availability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_availability", availability, "Is this wand available? (0=no, 1=not craftable, 2=craftable advanced, 3=craftable normal)").getInt();
     }
 
     protected boolean checkUsage(ItemStack stack, EntityPlayer player, World world) {
@@ -47,12 +81,25 @@ public class GenericWand extends Item {
 
     protected void registerUsage(ItemStack stack, EntityPlayer player, World world) {
     }
-    public void setupCrafting (){
-        if (availability==2){
-            setupCraftingInt();
+
+    public static void setupCrafting() {
+        for (GenericWand wand : wands) {
+            if (wand.availability == AVAILABILITY_NORMAL) {
+                wand.setupCraftingInt(ModItems.wandCore);
+            } else if (wand.availability == AVAILABILITY_ADVANCED) {
+                wand.setupCraftingInt(ModItems.advancedWandCore);
+            }
         }
     }
-    protected void setupCraftingInt () {
+
+    public static void setupConfig(Configuration cfg) {
+        for (GenericWand wand : wands) {
+            wand.initConfig(cfg);
+        }
+
+    }
+
+    protected void setupCraftingInt(Item wandcore) {
 
     }
 }
