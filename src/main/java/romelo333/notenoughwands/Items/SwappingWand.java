@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.List;

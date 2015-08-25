@@ -1,9 +1,13 @@
 package romelo333.notenoughwands.Items;
 
+import cofh.api.energy.IEnergyContainerItem;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import romelo333.notenoughwands.Config;
@@ -14,7 +18,9 @@ import romelo333.notenoughwands.varia.Tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericWand extends Item {
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "cofh.api.energy.IEnergyContainerItem", modid = "CoFHAPI")})
+public class GenericWand extends Item implements IEnergyContainerItem {
     protected int needsxp = 0;
     protected int needsrf = 0;
     protected int maxrf = 0;
@@ -26,6 +32,14 @@ public class GenericWand extends Item {
     public static int AVAILABILITY_NORMAL = 3;
 
     private static List<GenericWand> wands = new ArrayList<GenericWand>();
+
+    @Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
+        super.addInformation(stack, player, list, b);
+        if (needsrf > 0) {
+            list.add(EnumChatFormatting.GREEN+"Energy: " + getEnergyStored(stack) + " / " + getMaxEnergyStored(stack));
+        }
+    }
 
     protected GenericWand setup(String name, String texture) {
         if (availability > 0) {
@@ -86,6 +100,12 @@ public class GenericWand extends Item {
                 return false;
             }
         }
+        if (needsrf > 0) {
+            if (getEnergyStored(stack) < needsrf) {
+                Tools.error(player, "Not enough energy to use this wand!");
+                return false;
+            }
+        }
         return true;
     }
 
@@ -98,6 +118,9 @@ public class GenericWand extends Item {
         }
         if (isDamageable()) {
             stack.damageItem(1, player);
+        }
+        if (needsrf > 0) {
+            extractEnergy(stack, needsrf, false);
         }
     }
 
@@ -120,5 +143,60 @@ public class GenericWand extends Item {
 
     protected void setupCraftingInt(Item wandcore) {
 
+    }
+
+    @Override
+    @Optional.Method(modid = "CoFHAPI")
+    public int extractEnergy(ItemStack container, int maxExtract, boolean simulate) {
+        if (maxrf <= 0) {
+            return 0;
+        }
+
+        if (container.stackTagCompound == null || !container.stackTagCompound.hasKey("Energy")) {
+            return 0;
+        }
+        int energy = container.stackTagCompound.getInteger("Energy");
+        int energyExtracted = Math.min(energy, Math.min(this.needsrf, maxExtract));
+
+        if (!simulate) {
+            energy -= energyExtracted;
+            container.stackTagCompound.setInteger("Energy", energy);
+        }
+        return energyExtracted;
+    }
+
+    @Override
+    @Optional.Method(modid = "CoFHAPI")
+    public int receiveEnergy(ItemStack container, int maxReceive, boolean simulate) {
+        if (maxrf <= 0) {
+            return 0;
+        }
+
+        if (container.stackTagCompound == null) {
+            container.stackTagCompound = new NBTTagCompound();
+        }
+        int energy = container.stackTagCompound.getInteger("Energy");
+        int energyReceived = Math.min(maxrf - energy, Math.min(this.maxrf, maxReceive));
+
+        if (!simulate) {
+            energy += energyReceived;
+            container.stackTagCompound.setInteger("Energy", energy);
+        }
+        return energyReceived;
+    }
+
+    @Override
+    @Optional.Method(modid = "CoFHAPI")
+    public int getEnergyStored(ItemStack container) {
+        if (container.stackTagCompound == null || !container.stackTagCompound.hasKey("Energy")) {
+            return 0;
+        }
+        return container.stackTagCompound.getInteger("Energy");
+    }
+
+    @Override
+    @Optional.Method(modid = "CoFHAPI")
+    public int getMaxEnergyStored(ItemStack container) {
+        return maxrf;
     }
 }
