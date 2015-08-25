@@ -16,8 +16,8 @@ import java.util.List;
 
 public class SwappingWand extends GenericWand {
 
-    public SwappingWand(String name, String texture) {
-        setup(name, texture).xpUsage(10).availability(AVAILABILITY_ADVANCED);
+    public SwappingWand() {
+        setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED);
     }
 
     @Override

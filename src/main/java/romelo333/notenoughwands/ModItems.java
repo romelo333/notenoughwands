@@ -13,6 +13,6 @@ public class ModItems {
     public static void init() {
         wandCore = new WandCore("WandCore", "wandCore");
         advancedWandCore = new AdvancedWandCore("AdvancedWandCore", "advancedWandCore");
-        swappingWand = new SwappingWand("SwappingWand", "swappingWand");
+        swappingWand = new SwappingWand();
     }
 }
