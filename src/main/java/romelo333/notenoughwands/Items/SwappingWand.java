@@ -1,13 +1,16 @@
 package romelo333.notenoughwands.Items;
 
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.List;
@@ -85,4 +88,8 @@ public class SwappingWand extends GenericWand {
         }
     }
 
+    @Override
+    protected void setupCraftingInt() {
+        GameRegistry.addRecipe(new ItemStack(this),"rg ","gw ","  w",'r', Blocks.redstone_block, 'g',Blocks.glowstone, 'w', ModItems.wandCore);
+    }
 }

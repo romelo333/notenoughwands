@@ -47,4 +47,12 @@ public class GenericWand extends Item {
 
     protected void registerUsage(ItemStack stack, EntityPlayer player, World world) {
     }
+    public void setupCrafting (){
+        if (availability==2){
+            setupCraftingInt();
+        }
+    }
+    protected void setupCraftingInt () {
+
+    }
 }
