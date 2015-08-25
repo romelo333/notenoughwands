@@ -6,6 +6,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
 import romelo333.notenoughwands.Config;
+import romelo333.notenoughwands.Items.GenericWand;
 import romelo333.notenoughwands.ModCrafting;
 import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
@@ -19,6 +20,7 @@ public abstract class CommonProxy {
         ModItems.init();
         readMainConfig();
         ModCrafting.init();
+        GenericWand.setupChestLoot();
     }
 
     private void readMainConfig() {

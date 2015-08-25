@@ -17,7 +17,7 @@ import java.util.List;
 public class SwappingWand extends GenericWand {
 
     public SwappingWand() {
-        setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED);
+        setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(5);
     }
 
     @Override

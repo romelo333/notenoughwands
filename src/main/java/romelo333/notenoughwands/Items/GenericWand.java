@@ -8,7 +8,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.config.Configuration;
 import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ModItems;
@@ -25,6 +27,8 @@ public class GenericWand extends Item implements IEnergyContainerItem {
     protected int needsrf = 0;
     protected int maxrf = 0;
     protected int availability = AVAILABILITY_NORMAL;
+
+    protected int lootRarity = 10;
 
     public static int AVAILABILITY_NOT = 0;
     public static int AVAILABILITY_CREATIVE = 1;
@@ -70,6 +74,11 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         return this;
     }
 
+    GenericWand loot(int rarity) {
+        lootRarity = rarity;
+        return this;
+    }
+
     GenericWand availability(int availability) {
         this.availability = availability;
         return this;
@@ -81,7 +90,10 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         maxrf = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxrf", maxrf, "Maximum RF this wand can hold").getInt();
         setMaxDamage(cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxdurability", getMaxDamage(), "Maximum durability for this wand").getInt());
         availability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_availability", availability, "Is this wand available? (0=no, 1=not craftable, 2=craftable advanced, 3=craftable normal)").getInt();
+        lootRarity = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_lootRarity", lootRarity, "How rare should this wand be in chests? Lower is more rare (0 is not in chests)").getInt();
     }
+
+    //------------------------------------------------------------------------------
 
     protected boolean checkUsage(ItemStack stack, EntityPlayer player, World world) {
         if (player.capabilities.isCreativeMode) {
@@ -124,6 +136,8 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         }
     }
 
+    //------------------------------------------------------------------------------
+
     public static void setupCrafting() {
         for (GenericWand wand : wands) {
             if (wand.availability == AVAILABILITY_NORMAL) {
@@ -138,12 +152,36 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         for (GenericWand wand : wands) {
             wand.initConfig(cfg);
         }
-
     }
 
     protected void setupCraftingInt(Item wandcore) {
-
     }
+
+    //------------------------------------------------------------------------------
+
+    public static void setupChestLoot() {
+        for (GenericWand wand : wands) {
+            wand.setupChestLootInt();
+        }
+    }
+
+    public void setupChestLootInt() {
+        if (lootRarity > 0 && availability > 0) {
+            setupChestLootInt(ChestGenHooks.DUNGEON_CHEST);
+            setupChestLootInt(ChestGenHooks.MINESHAFT_CORRIDOR);
+            setupChestLootInt(ChestGenHooks.PYRAMID_DESERT_CHEST);
+            setupChestLootInt(ChestGenHooks.PYRAMID_JUNGLE_CHEST);
+            setupChestLootInt(ChestGenHooks.STRONGHOLD_CORRIDOR);
+            setupChestLootInt(ChestGenHooks.VILLAGE_BLACKSMITH);
+        }
+    }
+
+    private void setupChestLootInt(String category) {
+        ChestGenHooks chest = ChestGenHooks.getInfo(category);
+        chest.addItem(new WeightedRandomChestContent(this, 0, 1, 1, lootRarity));
+    }
+
+    //------------------------------------------------------------------------------
 
     @Override
     @Optional.Method(modid = "CoFHAPI")
