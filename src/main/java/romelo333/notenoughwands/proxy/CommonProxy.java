@@ -5,7 +5,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
-import romelo333.Config;
+import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
 

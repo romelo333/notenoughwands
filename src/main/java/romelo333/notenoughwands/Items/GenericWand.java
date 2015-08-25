@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import romelo333.Config;
+import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.NotEnoughWands;
 import romelo333.notenoughwands.varia.Tools;
 

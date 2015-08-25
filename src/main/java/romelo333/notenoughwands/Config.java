@@ -1,4 +1,4 @@
-package romelo333;
+package romelo333.notenoughwands;
 
 
 import net.minecraftforge.common.config.Configuration;
