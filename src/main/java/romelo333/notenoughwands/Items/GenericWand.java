@@ -18,7 +18,6 @@ public class GenericWand extends Item {
     protected int needsxp = 0;
     protected int needsrf = 0;
     protected int maxrf = 0;
-    protected int maxdurability = 0;
     protected int availability = AVAILABILITY_NORMAL;
 
     public static int AVAILABILITY_NOT = 0;
@@ -31,6 +30,7 @@ public class GenericWand extends Item {
     protected GenericWand setup(String name, String texture) {
         if (availability > 0) {
             setMaxStackSize(1);
+            setNoRepair();
             setUnlocalizedName(name);
             setCreativeTab(NotEnoughWands.tabNew);
             setTextureName(NotEnoughWands.MODID + ":" + texture);
@@ -52,7 +52,7 @@ public class GenericWand extends Item {
     }
 
     GenericWand durabilityUsage(int maxdurability) {
-        this.maxdurability = maxdurability;
+        setMaxDamage(maxdurability);
         return this;
     }
 
@@ -65,14 +65,24 @@ public class GenericWand extends Item {
         needsxp = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_needsxp", needsxp, "How much levels this wand should consume on usage").getInt();
         needsrf = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_needsrf", needsrf, "How much RF this wand should consume on usage").getInt();
         maxrf = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxrf", maxrf, "Maximum RF this wand can hold").getInt();
-        maxdurability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxdurability", maxdurability, "Maximum durability for this wand").getInt();
+        setMaxDamage(cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxdurability", getMaxDamage(), "Maximum durability for this wand").getInt());
         availability = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_availability", availability, "Is this wand available? (0=no, 1=not craftable, 2=craftable advanced, 3=craftable normal)").getInt();
     }
 
     protected boolean checkUsage(ItemStack stack, EntityPlayer player, World world) {
+        if (player.capabilities.isCreativeMode) {
+            return true;
+        }
         if (needsxp > 0) {
-            if (!Tools.addPlayerXP(player, -needsxp)) {
+            int experience = Tools.getPlayerXP(player) - needsxp;
+            if (experience <= 0) {
                 Tools.error(player, "Not enough experience!");
+                return false;
+            }
+        }
+        if (isDamageable()) {
+            if (stack.getItemDamage() >= stack.getMaxDamage()) {
+                Tools.error(player, "This wand can no longer be used!");
                 return false;
             }
         }
@@ -80,6 +90,15 @@ public class GenericWand extends Item {
     }
 
     protected void registerUsage(ItemStack stack, EntityPlayer player, World world) {
+        if (player.capabilities.isCreativeMode) {
+            return;
+        }
+        if (needsxp > 0) {
+            Tools.addPlayerXP(player, -needsxp);
+        }
+        if (isDamageable()) {
+            stack.damageItem(1, player);
+        }
     }
 
     public static void setupCrafting() {
