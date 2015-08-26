@@ -32,7 +32,7 @@ public class Tools {
         }
     }
 
-    private static int finditem(Item item, int meta, InventoryPlayer inv) {
+    public static int finditem(Item item, int meta, InventoryPlayer inv) {
         for (int i = 0; i < inv.mainInventory.length; ++i) {
             if (inv.mainInventory[i] != null && inv.mainInventory[i].getItem() == item && meta == inv.mainInventory[i].getItemDamage()) {
                 return i;

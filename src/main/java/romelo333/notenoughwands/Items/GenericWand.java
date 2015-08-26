@@ -3,6 +3,10 @@ package romelo333.notenoughwands.Items;
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,15 +14,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.config.Configuration;
+import org.lwjgl.opengl.GL11;
 import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
+import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Optional.InterfaceList({
         @Optional.Interface(iface = "cofh.api.energy.IEnergyContainerItem", modid = "CoFHAPI")})
@@ -180,6 +188,94 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         ChestGenHooks chest = ChestGenHooks.getInfo(category);
         chest.addItem(new WeightedRandomChestContent(this, 0, 1, 1, lootRarity));
     }
+
+    //------------------------------------------------------------------------------
+
+    @SideOnly(Side.CLIENT)
+    public void renderOverlay(RenderWorldLastEvent evt, EntityClientPlayerMP player, ItemStack wand) {
+
+    }
+
+    protected static void renderOutlines(RenderWorldLastEvent evt, EntityClientPlayerMP p, Set<Coordinate> coordinates) {
+        double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * evt.partialTicks;
+        double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.partialTicks;
+        double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.partialTicks;
+
+        boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        boolean txt = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        GL11.glPushMatrix();
+        GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
+
+//        renderLines(coordinates, 200, 30, 0);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        renderLines(coordinates, 200, 30, 0);
+
+        GL11.glPopMatrix();
+
+        if (depth) {
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+        } else {
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+        }
+        if (txt) {
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        }
+    }
+
+    private static void renderLines(Set<Coordinate> coordinates, int r, int g, int b) {
+        Tessellator tessellator = Tessellator.instance;
+
+        tessellator.startDrawing(GL11.GL_LINES);
+        tessellator.setColorOpaque(r, g, b);
+        tessellator.setBrightness(240);
+
+        GL11.glColor3ub((byte) r, (byte) g, (byte) b);
+        GL11.glLineWidth(6);
+
+        for (Coordinate coordinate : coordinates) {
+            float x = coordinate.getX();
+            float y = coordinate.getY();
+            float z = coordinate.getZ();
+
+            renderProtectionBlockOutline(tessellator, x, y, z, .02f);
+        }
+        tessellator.draw();
+    }
+
+    private static void renderProtectionBlockOutline(Tessellator tessellator, float mx, float my, float mz, float o) {
+        tessellator.addVertex(mx-o, my-o, mz-o);
+        tessellator.addVertex(mx+1+o, my-o, mz-o);
+        tessellator.addVertex(mx-o, my-o, mz-o);
+        tessellator.addVertex(mx-o, my+1+o, mz-o);
+        tessellator.addVertex(mx-o, my-o, mz-o);
+        tessellator.addVertex(mx-o, my-o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz+1+o);
+        tessellator.addVertex(mx-o, my+1+o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my-o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz-o);
+
+        tessellator.addVertex(mx-o, my+1+o, mz-o);
+        tessellator.addVertex(mx-o, my+1+o, mz+1+o);
+        tessellator.addVertex(mx-o, my+1+o, mz-o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz-o);
+
+        tessellator.addVertex(mx+1+o, my-o, mz-o);
+        tessellator.addVertex(mx+1+o, my-o, mz+1+o);
+        tessellator.addVertex(mx+1+o, my-o, mz-o);
+        tessellator.addVertex(mx+1+o, my+1+o, mz-o);
+
+        tessellator.addVertex(mx, my, mz+1+o);
+        tessellator.addVertex(mx+1+o, my, mz+1+o);
+        tessellator.addVertex(mx, my, mz+1+o);
+        tessellator.addVertex(mx, my+1+o, mz+1+o);
+    }
+
+
 
     //------------------------------------------------------------------------------
 

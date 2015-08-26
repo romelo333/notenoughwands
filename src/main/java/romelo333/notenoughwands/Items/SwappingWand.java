@@ -2,17 +2,27 @@ package romelo333.notenoughwands.Items;
 
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SwappingWand extends GenericWand {
 
@@ -84,6 +94,20 @@ public class SwappingWand extends GenericWand {
             tagCompound.setInteger("block", id);
             tagCompound.setInteger("meta", meta);
             Tools.notify(player, "Selected block: " + name);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void renderOverlay(RenderWorldLastEvent evt, EntityClientPlayerMP player, ItemStack wand) {
+        MovingObjectPosition mouseOver = Minecraft.getMinecraft().objectMouseOver;
+        if (mouseOver != null) {
+            Block block = player.worldObj.getBlock(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
+            if (block != null && block.getMaterial() != Material.air) {
+                Set<Coordinate> coordinates = new HashSet<Coordinate>();
+                coordinates.add(new Coordinate(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ));
+                renderOutlines(evt, player, coordinates);
+            }
         }
     }
 
