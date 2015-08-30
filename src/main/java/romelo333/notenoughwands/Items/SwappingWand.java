@@ -74,6 +74,7 @@ public class SwappingWand extends GenericWand {
             Block oldblock = world.getBlock(x, y, z);
             int oldmeta = world.getBlockMetadata(x,y,z);
             player.inventory.addItemStackToInventory(new ItemStack(oldblock,1,oldmeta));
+            Tools.playSound(world, block.stepSound.getBreakSound(), x, y, z, 1.0f, 1.0f);
             world.setBlock(x, y, z, block, meta, 2);
             player.openContainer.detectAndSendChanges();
             registerUsage(stack, player, world);
