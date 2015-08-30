@@ -17,6 +17,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.util.ForgeDirection;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
@@ -25,6 +26,11 @@ import java.util.List;
 import java.util.Set;
 
 public class SwappingWand extends GenericWand {
+
+    public static final int MODE_SINGLE = 0;
+    public static final int MODE_3X3 = 1;
+    public static final int MODE_5X5 = 2;
+    public static final int MODE_7X7 = 3;
 
     public SwappingWand() {
         setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(5);
@@ -46,18 +52,41 @@ public class SwappingWand extends GenericWand {
     }
 
     @Override
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        if (!world.isRemote) {
+            if (player.isSneaking()) {
+                int mode = getMode(stack);
+                mode++;
+                if (mode > MODE_5X5) {
+                    mode = MODE_SINGLE;
+                }
+                switch (mode) {
+                    case MODE_SINGLE: Tools.notify(player, "Switched to single mode"); break;
+                    case MODE_3X3: Tools.notify(player, "Switched to 3x3 mode"); break;
+                    case MODE_5X5: Tools.notify(player, "Switched to 5x5 mode"); break;
+                    case MODE_7X7: Tools.notify(player, "Switched to 7x7 mode"); break;
+                }
+                Tools.getTagCompound(stack).setInteger("mode", mode);
+            }
+            return stack;
+        } else {
+            return super.onItemRightClick(stack, world, player);
+        }
+    }
+
+    @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
             if (player.isSneaking()){
                 selectBlock(stack, player, world, x, y, z);
             } else {
-                placeBlock(stack, player, world, x, y, z);
+                placeBlock(stack, player, world, x, y, z, side);
             }
         }
         return true;
     }
 
-    private void placeBlock(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
+    private void placeBlock(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side) {
         if (!checkUsage(stack, player, world)) {
             return;
         }
@@ -70,15 +99,25 @@ public class SwappingWand extends GenericWand {
         int id = tagCompound.getInteger("block");
         Block block = (Block)Block.blockRegistry.getObjectById(id);
         int meta = tagCompound.getInteger("meta");
-        if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
-            Block oldblock = world.getBlock(x, y, z);
-            int oldmeta = world.getBlockMetadata(x,y,z);
-            player.inventory.addItemStackToInventory(new ItemStack(oldblock,1,oldmeta));
-            Tools.playSound(world, block.stepSound.getBreakSound(), x, y, z, 1.0f, 1.0f);
-            world.setBlock(x, y, z, block, meta, 2);
-            player.openContainer.detectAndSendChanges();
-            registerUsage(stack, player, world);
-        } else {
+        Block oldblock = world.getBlock(x, y, z);
+        int oldmeta = world.getBlockMetadata(x, y, z);
+        Set<Coordinate> coordinates = findSuitableBlocks(stack, world, side, x, y, z, oldblock, oldmeta);
+        boolean notenough = false;
+        for (Coordinate coordinate : coordinates) {
+            if (!checkUsage(stack, player, world)) {
+                return;
+            }
+            if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
+                player.inventory.addItemStackToInventory(new ItemStack(oldblock,1,oldmeta));
+                Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
+                world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
+                player.openContainer.detectAndSendChanges();
+                registerUsage(stack, player, world);
+            } else {
+                notenough = true;
+            }
+        }
+        if (notenough) {
             Tools.error(player, "You don't have the right block");
         }
     }
@@ -105,11 +144,69 @@ public class SwappingWand extends GenericWand {
         if (mouseOver != null) {
             Block block = player.worldObj.getBlock(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
             if (block != null && block.getMaterial() != Material.air) {
-                Set<Coordinate> coordinates = new HashSet<Coordinate>();
-                coordinates.add(new Coordinate(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ));
+                int meta = player.worldObj.getBlockMetadata(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
+                Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ, block, meta);
                 renderOutlines(evt, player, coordinates);
             }
         }
+    }
+
+    private Set<Coordinate> findSuitableBlocks(ItemStack stack, World world, int sideHit, int x, int y, int z, Block centerBlock, int centerMeta) {
+        Set<Coordinate> coordinates = new HashSet<Coordinate>();
+        int mode = getMode(stack);
+        int dim = 0;
+        switch (mode) {
+            case MODE_SINGLE:
+                coordinates.add(new Coordinate(x, y, z));
+                return coordinates;
+            case MODE_3X3:
+                dim = 1;
+                break;
+            case MODE_5X5:
+                dim = 2;
+                break;
+            case MODE_7X7:
+                dim = 3;
+                break;
+        }
+        switch (ForgeDirection.getOrientation(sideHit)) {
+            case UP:
+            case DOWN:
+                for (int dx = x-dim ; dx <= x+dim ; dx++) {
+                    for (int dz = z-dim ; dz <= z+dim ; dz++) {
+                        checkAndAddBlock(world, dx, y, dz, centerBlock, centerMeta, coordinates);
+                    }
+                }
+                break;
+            case SOUTH:
+            case NORTH:
+                for (int dx = x-dim ; dx <= x+dim ; dx++) {
+                    for (int dy = y-dim ; dy <= y+dim ; dy++) {
+                        checkAndAddBlock(world, dx, dy, z, centerBlock, centerMeta, coordinates);
+                    }
+                }
+                break;
+            case EAST:
+            case WEST:
+                for (int dy = y-dim ; dy <= y+dim ; dy++) {
+                    for (int dz = z-dim ; dz <= z+dim ; dz++) {
+                        checkAndAddBlock(world, x, dy, dz, centerBlock, centerMeta, coordinates);
+                    }
+                }
+                break;
+        }
+
+        return coordinates;
+    }
+
+    private void checkAndAddBlock(World world, int x, int y, int z, Block centerBlock, int centerMeta, Set<Coordinate> coordinates) {
+        if (world.getBlock(x, y, z) == centerBlock && world.getBlockMetadata(x, y, z) == centerMeta) {
+            coordinates.add(new Coordinate(x, y, z));
+        }
+    }
+
+    private int getMode(ItemStack stack) {
+        return Tools.getTagCompound(stack).getInteger("mode");
     }
 
     @Override
