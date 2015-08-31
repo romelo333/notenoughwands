@@ -32,6 +32,10 @@ public class SwappingWand extends GenericWand {
     public static final int MODE_5X5 = 2;
     public static final int MODE_7X7 = 3;
 
+    public static final String[] descriptions = new String[] {
+        "single", "3x3", "5x5", "7x7"
+    };
+
     public SwappingWand() {
         setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(5);
     }
@@ -40,15 +44,19 @@ public class SwappingWand extends GenericWand {
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);
         NBTTagCompound compound = stack.getTagCompound();
-        if (compound == null){
-            list.add(EnumChatFormatting.RED+"No selected block");
-        }else{
+        if (compound == null) {
+            list.add(EnumChatFormatting.RED + "No selected block");
+        } else {
             int id = compound.getInteger("block");
-            Block block = (Block)Block.blockRegistry.getObjectById(id);
+            Block block = (Block) Block.blockRegistry.getObjectById(id);
             int meta = compound.getInteger("meta");
             String name = Tools.getBlockName(block, meta);
-            list.add(EnumChatFormatting.GREEN+"Selected block: "+name);
+            list.add(EnumChatFormatting.GREEN + "Selected block: " + name);
+            list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[compound.getInteger("mode")]);
         }
+        list.add("Sneak right click to select a block.");
+        list.add("Sneak right click in air to switch mode.");
+        list.add("Right click on block to replace.");
     }
 
     @Override
@@ -60,12 +68,7 @@ public class SwappingWand extends GenericWand {
                 if (mode > MODE_5X5) {
                     mode = MODE_SINGLE;
                 }
-                switch (mode) {
-                    case MODE_SINGLE: Tools.notify(player, "Switched to single mode"); break;
-                    case MODE_3X3: Tools.notify(player, "Switched to 3x3 mode"); break;
-                    case MODE_5X5: Tools.notify(player, "Switched to 5x5 mode"); break;
-                    case MODE_7X7: Tools.notify(player, "Switched to 7x7 mode"); break;
-                }
+                Tools.notify(player, "Switched to " + descriptions[mode] + " mode");
                 Tools.getTagCompound(stack).setInteger("mode", mode);
             }
             return stack;
@@ -77,7 +80,7 @@ public class SwappingWand extends GenericWand {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
-            if (player.isSneaking()){
+            if (player.isSneaking()) {
                 selectBlock(stack, player, world, x, y, z);
             } else {
                 placeBlock(stack, player, world, x, y, z, side);
@@ -92,12 +95,12 @@ public class SwappingWand extends GenericWand {
         }
 
         NBTTagCompound tagCompound = stack.getTagCompound();
-        if (tagCompound == null){
+        if (tagCompound == null) {
             Tools.error(player, "First select a block by sneaking");
             return;
         }
         int id = tagCompound.getInteger("block");
-        Block block = (Block)Block.blockRegistry.getObjectById(id);
+        Block block = (Block) Block.blockRegistry.getObjectById(id);
         int meta = tagCompound.getInteger("meta");
         Block oldblock = world.getBlock(x, y, z);
         int oldmeta = world.getBlockMetadata(x, y, z);
@@ -108,7 +111,7 @@ public class SwappingWand extends GenericWand {
                 return;
             }
             if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
-                player.inventory.addItemStackToInventory(new ItemStack(oldblock,1,oldmeta));
+                player.inventory.addItemStackToInventory(new ItemStack(oldblock, 1, oldmeta));
                 Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
                 player.openContainer.detectAndSendChanges();
@@ -172,24 +175,24 @@ public class SwappingWand extends GenericWand {
         switch (ForgeDirection.getOrientation(sideHit)) {
             case UP:
             case DOWN:
-                for (int dx = x-dim ; dx <= x+dim ; dx++) {
-                    for (int dz = z-dim ; dz <= z+dim ; dz++) {
+                for (int dx = x - dim; dx <= x + dim; dx++) {
+                    for (int dz = z - dim; dz <= z + dim; dz++) {
                         checkAndAddBlock(world, dx, y, dz, centerBlock, centerMeta, coordinates);
                     }
                 }
                 break;
             case SOUTH:
             case NORTH:
-                for (int dx = x-dim ; dx <= x+dim ; dx++) {
-                    for (int dy = y-dim ; dy <= y+dim ; dy++) {
+                for (int dx = x - dim; dx <= x + dim; dx++) {
+                    for (int dy = y - dim; dy <= y + dim; dy++) {
                         checkAndAddBlock(world, dx, dy, z, centerBlock, centerMeta, coordinates);
                     }
                 }
                 break;
             case EAST:
             case WEST:
-                for (int dy = y-dim ; dy <= y+dim ; dy++) {
-                    for (int dz = z-dim ; dz <= z+dim ; dz++) {
+                for (int dy = y - dim; dy <= y + dim; dy++) {
+                    for (int dz = z - dim; dz <= z + dim; dz++) {
                         checkAndAddBlock(world, x, dy, dz, centerBlock, centerMeta, coordinates);
                     }
                 }
@@ -211,6 +214,6 @@ public class SwappingWand extends GenericWand {
 
     @Override
     protected void setupCraftingInt(Item wandcore) {
-        GameRegistry.addRecipe(new ItemStack(this),"rg ","gw ","  w",'r', Blocks.redstone_block, 'g',Blocks.glowstone, 'w', wandcore);
+        GameRegistry.addRecipe(new ItemStack(this), "rg ", "gw ", "  w", 'r', Blocks.redstone_block, 'g', Blocks.glowstone, 'w', wandcore);
     }
 }
