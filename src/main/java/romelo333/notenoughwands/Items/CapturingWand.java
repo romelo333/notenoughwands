@@ -1,9 +1,13 @@
 package romelo333.notenoughwands.Items;
 
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -101,5 +105,10 @@ public class CapturingWand extends GenericWand {
             }
         }
         return true;
+    }
+
+    @Override
+    protected void setupCraftingInt(Item wandcore) {
+        GameRegistry.addRecipe(new ItemStack(this), "dr ", "rw ", "  w", 'r', Items.rotten_flesh, 'd', Items.diamond, 'w', wandcore);
     }
 }
