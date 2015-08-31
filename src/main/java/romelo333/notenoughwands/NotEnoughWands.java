@@ -41,7 +41,7 @@ public class NotEnoughWands {
         @Override
         @SideOnly(Side.CLIENT)
         public Item getTabIconItem() {
-            return Items.stick;
+            return ModItems.teleportationWand;
         }
     };
 
