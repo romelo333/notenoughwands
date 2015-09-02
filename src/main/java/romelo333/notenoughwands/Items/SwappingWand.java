@@ -17,7 +17,9 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.ForgeDirection;
+import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
@@ -32,6 +34,8 @@ public class SwappingWand extends GenericWand {
     public static final int MODE_5X5 = 2;
     public static final int MODE_7X7 = 3;
 
+    private float hardnessDistance = 35.0f;
+
     public static final String[] descriptions = new String[] {
         "single", "3x3", "5x5", "7x7"
     };
@@ -39,6 +43,13 @@ public class SwappingWand extends GenericWand {
     public SwappingWand() {
         setup("SwappingWand", "swappingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(5);
     }
+
+    @Override
+    public void initConfig(Configuration cfg) {
+        super.initConfig(cfg);
+        hardnessDistance = (float) cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_hardnessDistance", hardnessDistance, "How far away the hardness can be to allow swapping (100 means basically everything allowed)").getDouble();
+    }
+
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
@@ -102,8 +113,22 @@ public class SwappingWand extends GenericWand {
         int id = tagCompound.getInteger("block");
         Block block = (Block) Block.blockRegistry.getObjectById(id);
         int meta = tagCompound.getInteger("meta");
+        float hardness = tagCompound.getFloat("hardness");
+
         Block oldblock = world.getBlock(x, y, z);
         int oldmeta = world.getBlockMetadata(x, y, z);
+        float blockHardness = oldblock.getBlockHardness(world, x, y, z);
+
+        if (blockHardness < -0.1f) {
+            Tools.error(player, "This block cannot be swapped!");
+            return;
+        }
+
+        if (Math.abs(hardness-blockHardness) >= hardnessDistance) {
+            Tools.error(player, "The hardness of this blocks differs too much to swap!");
+            return;
+        }
+
         Set<Coordinate> coordinates = findSuitableBlocks(stack, world, side, x, y, z, oldblock, oldmeta);
         boolean notenough = false;
         for (Coordinate coordinate : coordinates) {
@@ -136,6 +161,8 @@ public class SwappingWand extends GenericWand {
             int id = Block.blockRegistry.getIDForObject(block);
             tagCompound.setInteger("block", id);
             tagCompound.setInteger("meta", meta);
+            float hardness = block.getBlockHardness(world, x, y, z);
+            tagCompound.setFloat("hardness", hardness);
             Tools.notify(player, "Selected block: " + name);
         }
     }
