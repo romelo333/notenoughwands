@@ -4,6 +4,7 @@ package romelo333.notenoughwands.Items;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -13,13 +14,25 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.List;
 
 public class CapturingWand extends GenericWand {
+    private boolean allowPassive = true;
+    private boolean allowHostile = true;
+
     public CapturingWand() {
         setup("CapturingWand", "capturingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(3);
+    }
+
+    @Override
+    public void initConfig(Configuration cfg) {
+        super.initConfig(cfg);
+        allowPassive =  cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_allowPassive", allowPassive, "Allow capturing passive mobs").getBoolean();
+        allowHostile =  cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_allowHostile", allowHostile, "Allow capturing hostile mobs").getBoolean();
     }
 
     @Override
@@ -89,6 +102,16 @@ public class CapturingWand extends GenericWand {
                     Tools.error(player, "I don't think that player would appreciate being captured!");
                     return true;
                 }
+
+                if ((!allowHostile) && entityLivingBase instanceof IMob) {
+                    Tools.error(player, "It is not possible to capture hostile mobs with this wand!");
+                    return true;
+                }
+                if ((!allowPassive) && !(entityLivingBase instanceof IMob)) {
+                    Tools.error(player, "It is not possible to capture passive mobs with this wand!");
+                    return true;
+                }
+
                 if (!checkUsage(stack, player, player.worldObj)) {
                     return true;
                 }
