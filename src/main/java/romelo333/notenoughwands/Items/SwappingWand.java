@@ -50,6 +50,16 @@ public class SwappingWand extends GenericWand {
         hardnessDistance = (float) cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_hardnessDistance", hardnessDistance, "How far away the hardness can be to allow swapping (100 means basically everything allowed)").getDouble();
     }
 
+    @Override
+    public void toggleMode(EntityPlayer player, ItemStack stack) {
+        int mode = getMode(stack);
+        mode++;
+        if (mode > MODE_5X5) {
+            mode = MODE_SINGLE;
+        }
+        Tools.notify(player, "Switched to " + descriptions[mode] + " mode");
+        Tools.getTagCompound(stack).setInteger("mode", mode);
+    }
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
@@ -68,24 +78,6 @@ public class SwappingWand extends GenericWand {
         list.add("Sneak right click to select a block.");
         list.add("Sneak right click in air to switch mode.");
         list.add("Right click on block to replace.");
-    }
-
-    @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if (!world.isRemote) {
-            if (player.isSneaking()) {
-                int mode = getMode(stack);
-                mode++;
-                if (mode > MODE_5X5) {
-                    mode = MODE_SINGLE;
-                }
-                Tools.notify(player, "Switched to " + descriptions[mode] + " mode");
-                Tools.getTagCompound(stack).setInteger("mode", mode);
-            }
-            return stack;
-        } else {
-            return super.onItemRightClick(stack, world, player);
-        }
     }
 
     @Override

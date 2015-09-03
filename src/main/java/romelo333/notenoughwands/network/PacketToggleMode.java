@@ -27,7 +27,7 @@ public class PacketToggleMode implements IMessage, IMessageHandler<PacketToggleM
         ItemStack heldItem = playerEntity.getHeldItem();
         if (heldItem != null && heldItem.getItem() instanceof GenericWand) {
             GenericWand genericWand = (GenericWand) (heldItem.getItem());
-            genericWand.toggleMode(heldItem);
+            genericWand.toggleMode(playerEntity, heldItem);
         }
         return null;
     }
