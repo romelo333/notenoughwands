@@ -4,4 +4,7 @@ item.CapturingWand.name=Capturing Wand
 item.WandCore.name=Wand Core
 item.AdvancedWandCore.name=Advanced Wand Core
 
+key.modifier=Wand Modifier
+key.categories.notenoughwands=Not Enough Wands
+
 itemGroup.NotEnoughWands=Not Enough Wands

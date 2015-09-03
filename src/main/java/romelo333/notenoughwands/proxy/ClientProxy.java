@@ -1,5 +1,6 @@
 package romelo333.notenoughwands.proxy;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -10,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import romelo333.notenoughwands.Items.GenericWand;
+import romelo333.notenoughwands.KeyBindings;
+import romelo333.notenoughwands.KeyInputHandler;
 import romelo333.notenoughwands.ModItems;
 
 public class ClientProxy extends CommonProxy {
@@ -24,6 +27,8 @@ public class ClientProxy extends CommonProxy {
         super.init(e);
 //        ModRenderers.init();
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(new KeyInputHandler());
+        KeyBindings.init();
     }
 
     @SubscribeEvent
@@ -37,7 +42,6 @@ public class ClientProxy extends CommonProxy {
         if (heldItem.getItem() instanceof GenericWand) {
             GenericWand genericWand = (GenericWand) heldItem.getItem();
             genericWand.renderOverlay(evt, p, heldItem);
-
         }
     }
 

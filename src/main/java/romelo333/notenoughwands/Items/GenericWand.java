@@ -144,6 +144,9 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         }
     }
 
+    public void toggleMode(ItemStack stack) {
+    }
+
     //------------------------------------------------------------------------------
 
     public static void setupCrafting() {
