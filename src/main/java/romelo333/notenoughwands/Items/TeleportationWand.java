@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -46,7 +45,7 @@ public class TeleportationWand extends GenericWand {
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
         if (!world.isRemote) {
-            if (!checkUsage(stack, player, world)) {
+            if (!checkUsage(stack, player, 1.0f)) {
                 return stack;
             }
             Vec3 lookVec = player.getLookVec();
@@ -90,7 +89,7 @@ public class TeleportationWand extends GenericWand {
                     }
                 }
             }
-            registerUsage(stack, player, world);
+            registerUsage(stack, player, 1.0f);
             if (teleportVolume >= 0.01) {
                 ((EntityPlayerMP) player).worldObj.playSoundAtEntity(player, NotEnoughWands.MODID + ":teleport", teleportVolume, 1.0f);
             }

@@ -103,12 +103,12 @@ public class GenericWand extends Item implements IEnergyContainerItem {
 
     //------------------------------------------------------------------------------
 
-    protected boolean checkUsage(ItemStack stack, EntityPlayer player, World world) {
+    protected boolean checkUsage(ItemStack stack, EntityPlayer player, float difficultyScale) {
         if (player.capabilities.isCreativeMode) {
             return true;
         }
         if (needsxp > 0) {
-            int experience = Tools.getPlayerXP(player) - needsxp;
+            int experience = Tools.getPlayerXP(player) - (int)(needsxp * difficultyScale);
             if (experience <= 0) {
                 Tools.error(player, "Not enough experience!");
                 return false;
@@ -121,7 +121,7 @@ public class GenericWand extends Item implements IEnergyContainerItem {
             }
         }
         if (needsrf > 0) {
-            if (getEnergyStored(stack) < needsrf) {
+            if (getEnergyStored(stack) < (int)(needsrf * difficultyScale)) {
                 Tools.error(player, "Not enough energy to use this wand!");
                 return false;
             }
@@ -129,18 +129,18 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         return true;
     }
 
-    protected void registerUsage(ItemStack stack, EntityPlayer player, World world) {
+    protected void registerUsage(ItemStack stack, EntityPlayer player, float difficultyScale) {
         if (player.capabilities.isCreativeMode) {
             return;
         }
         if (needsxp > 0) {
-            Tools.addPlayerXP(player, -needsxp);
+            Tools.addPlayerXP(player, -(int)(needsxp * difficultyScale));
         }
         if (isDamageable()) {
             stack.damageItem(1, player);
         }
         if (needsrf > 0) {
-            extractEnergy(stack, needsrf, false);
+            extractEnergy(stack, (int) (needsrf * difficultyScale), false);
         }
     }
 

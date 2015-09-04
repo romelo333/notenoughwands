@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +22,8 @@ import java.util.List;
 public class CapturingWand extends GenericWand {
     private boolean allowPassive = true;
     private boolean allowHostile = true;
+    private float difficultyMult = 0.0f;
+    private float diffcultyAdd = 1.0f;
 
     public CapturingWand() {
         setup("CapturingWand", "capturingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(3);
@@ -33,6 +34,8 @@ public class CapturingWand extends GenericWand {
         super.initConfig(cfg);
         allowPassive =  cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_allowPassive", allowPassive, "Allow capturing passive mobs").getBoolean();
         allowHostile =  cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_allowHostile", allowHostile, "Allow capturing hostile mobs").getBoolean();
+        difficultyMult = (float) cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_difficultyMult", difficultyMult, "Multiply the HP of a mob with this number to get the difficulty scale that affects XP/RF usage (a final result of 1.0 means that the default XP/RF is used)").getDouble();
+        diffcultyAdd = (float) cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_diffcultyAdd", diffcultyAdd, "Add this to the HP * difficultyMult to get the final difficulty scale that affects XP/RF usage (a final result of 1.0 means that the default XP/RF is used)").getDouble();
     }
 
     @Override
@@ -112,7 +115,9 @@ public class CapturingWand extends GenericWand {
                     return true;
                 }
 
-                if (!checkUsage(stack, player, player.worldObj)) {
+                float difficultyScale = entityLivingBase.getMaxHealth() * difficultyMult + diffcultyAdd;
+                System.out.println("difficultyScale = " + difficultyScale);
+                if (!checkUsage(stack, player, difficultyScale)) {
                     return true;
                 }
 
@@ -122,7 +127,7 @@ public class CapturingWand extends GenericWand {
                 Tools.getTagCompound(stack).setString("type", entity.getClass().getCanonicalName());
                 player.worldObj.removeEntity(entity);
 
-                registerUsage(stack, player, player.worldObj);
+                registerUsage(stack, player, difficultyScale);
             } else {
                 Tools.error(player, "Please select a living entity!");
             }

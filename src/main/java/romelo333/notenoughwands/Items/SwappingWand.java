@@ -93,7 +93,7 @@ public class SwappingWand extends GenericWand {
     }
 
     private void placeBlock(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side) {
-        if (!checkUsage(stack, player, world)) {
+        if (!checkUsage(stack, player, 1.0f)) {
             return;
         }
 
@@ -124,7 +124,7 @@ public class SwappingWand extends GenericWand {
         Set<Coordinate> coordinates = findSuitableBlocks(stack, world, side, x, y, z, oldblock, oldmeta);
         boolean notenough = false;
         for (Coordinate coordinate : coordinates) {
-            if (!checkUsage(stack, player, world)) {
+            if (!checkUsage(stack, player, 1.0f)) {
                 return;
             }
             if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
@@ -132,7 +132,7 @@ public class SwappingWand extends GenericWand {
                 Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
                 player.openContainer.detectAndSendChanges();
-                registerUsage(stack, player, world);
+                registerUsage(stack, player, 1.0f);
             } else {
                 notenough = true;
             }
