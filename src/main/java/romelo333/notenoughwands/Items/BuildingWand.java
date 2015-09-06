@@ -19,7 +19,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BuildingWand extends GenericWand{
     public BuildingWand() {
