@@ -17,6 +17,7 @@ public abstract class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         mainConfig = NotEnoughWands.config;
         ModItems.init();
+        ModBlocks.init();
         readMainConfig();
         ModCrafting.init();
         GenericWand.setupChestLoot();

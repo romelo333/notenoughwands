@@ -9,6 +9,8 @@ public class ModItems {
     public static SwappingWand swappingWand;
     public static TeleportationWand teleportationWand;
     public static CapturingWand capturingWand;
+    public static BuildingWand buildingWand;
+    public static IlluminationWand illuminationWand;
 
     public static void init() {
         wandCore = new WandCore("WandCore", "wandCore");
@@ -16,5 +18,7 @@ public class ModItems {
         swappingWand = new SwappingWand();
         teleportationWand = new TeleportationWand();
         capturingWand = new CapturingWand();
+        buildingWand = new BuildingWand();
+        illuminationWand = new IlluminationWand();
     }
 }
