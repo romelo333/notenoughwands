@@ -112,6 +112,11 @@ public class SwappingWand extends GenericWand {
         int oldmeta = world.getBlockMetadata(x, y, z);
         float blockHardness = oldblock.getBlockHardness(world, x, y, z);
 
+        if (block == oldblock && meta == oldmeta) {
+            // The same, nothing happens.
+            return;
+        }
+
         if (blockHardness < -0.1f) {
             Tools.error(player, "This block cannot be swapped!");
             return;
@@ -173,6 +178,14 @@ public class SwappingWand extends GenericWand {
             Block block = player.worldObj.getBlock(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
             if (block != null && block.getMaterial() != Material.air) {
                 int meta = player.worldObj.getBlockMetadata(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
+
+                int wandId = Tools.getTagCompound(wand).getInteger("block");
+                Block wandBlock = (Block) Block.blockRegistry.getObjectById(wandId);
+                int wandMeta = Tools.getTagCompound(wand).getInteger("meta");
+                if (wandBlock == block && wandMeta == meta) {
+                    return;
+                }
+
                 Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ, block, meta);
                 renderOutlines(evt, player, coordinates);
             }
