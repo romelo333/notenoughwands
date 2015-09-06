@@ -19,8 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class BuildingWand extends GenericWand{
     public BuildingWand() {
@@ -42,10 +41,10 @@ public class BuildingWand extends GenericWand{
         if (!checkUsage(stack, player, 1.0f)) {
             return;
         }
-        Set<Coordinate> coordinates = findSuitableBlocks(stack, world, side, x, y, z);
         boolean notenough = false;
         Block block = world.getBlock(x, y, z);
         int meta = world.getBlockMetadata(x, y, z);
+        Set<Coordinate> coordinates = findSuitableBlocks(stack, world, side, x, y, z, block, meta);
         for (Coordinate coordinate : coordinates) {
             if (!checkUsage(stack, player, 1.0f)) {
                 return;
@@ -63,6 +62,7 @@ public class BuildingWand extends GenericWand{
             Tools.error(player, "You don't have the right block");
         }
     }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void renderOverlay(RenderWorldLastEvent evt, EntityClientPlayerMP player, ItemStack wand) {
@@ -71,27 +71,77 @@ public class BuildingWand extends GenericWand{
             Block block = player.worldObj.getBlock(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
             if (block != null && block.getMaterial() != Material.air) {
                 int meta = player.worldObj.getBlockMetadata(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
-                Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
+                Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ, block, meta);
                 renderOutlines(evt, player, coordinates);
             }
         }
     }
 
-    private Set<Coordinate> findSuitableBlocks(ItemStack stack, World world, int sideHit, int x, int y, int z) {
-        Set<Coordinate> coordinates = new HashSet<Coordinate>();
+    private Set<Coordinate> findSuitableBlocks(ItemStack stack, World world, int sideHit, int x, int y, int z, Block block, int meta) {
         ForgeDirection direction = ForgeDirection.getOrientation(sideHit);
-        x = x + direction.offsetX;
-        y = y + direction.offsetY;
-        z = z + direction.offsetZ;
-        coordinates.add(new Coordinate(x,y,z));
+        Coordinate base = new Coordinate(x, y, z);
+
+        Set<Coordinate> coordinates = new HashSet<Coordinate>();
+        Set<Coordinate> done = new HashSet<Coordinate>();
+        Deque<Coordinate> todo = new ArrayDeque<Coordinate>();
+        todo.addLast(base);
+        findSuitableBlocks(world, coordinates, done, todo, direction, block, meta);
+
         return coordinates;
     }
 
-    private void checkAndAddBlock(World world, int x, int y, int z, Block centerBlock, int centerMeta, Set<Coordinate> coordinates) {
-        if (world.getBlock(x, y, z) == centerBlock && world.getBlockMetadata(x, y, z) == centerMeta) {
-            coordinates.add(new Coordinate(x, y, z));
+    private void findSuitableBlocks(World world, Set<Coordinate> coordinates, Set<Coordinate> done, Deque<Coordinate> todo, ForgeDirection direction, Block block, int meta) {
+        while (!todo.isEmpty() && coordinates.size() < 9) {
+            Coordinate base = todo.pollFirst();
+            if (!done.contains(base)) {
+                done.add(base);
+                Coordinate offset = base.add(direction);
+                if (world.getBlock(base.getX(), base.getY(), base.getZ()) == block && world.getBlockMetadata(base.getX(), base.getY(), base.getZ()) == meta &&
+                        world.isAirBlock(offset.getX(), offset.getY(), offset.getZ())) {
+                    coordinates.add(offset);
+                    todo.addLast(base.add(dir1(direction)));
+                    todo.addLast(base.add(dir1(direction).getOpposite()));
+                    todo.addLast(base.add(dir2(direction)));
+                    todo.addLast(base.add(dir2(direction).getOpposite()));
+                    todo.addLast(base.add(dir1(direction)).add(dir2(direction)));
+                    todo.addLast(base.add(dir1(direction)).add(dir2(direction).getOpposite()));
+                    todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction)));
+                    todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction).getOpposite()));
+                }
+            }
         }
     }
+
+    private ForgeDirection dir1(ForgeDirection direction) {
+        switch (direction) {
+            case DOWN:
+            case UP:
+                return ForgeDirection.EAST;
+            case NORTH:
+            case SOUTH:
+                return ForgeDirection.EAST;
+            case WEST:
+            case EAST:
+                return ForgeDirection.DOWN;
+        }
+        return null;
+    }
+
+    private ForgeDirection dir2(ForgeDirection direction) {
+        switch (direction) {
+            case DOWN:
+            case UP:
+                return ForgeDirection.SOUTH;
+            case NORTH:
+            case SOUTH:
+                return ForgeDirection.DOWN;
+            case WEST:
+            case EAST:
+                return ForgeDirection.SOUTH;
+        }
+        return null;
+    }
+
 
     @Override
     protected void setupCraftingInt(Item wandcore) {
