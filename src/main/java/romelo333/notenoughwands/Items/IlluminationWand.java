@@ -1,7 +1,10 @@
 package romelo333.notenoughwands.Items;
 
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -29,4 +32,10 @@ public class IlluminationWand extends GenericWand {
         }
         return true;
     }
+
+    @Override
+    protected void setupCraftingInt(Item wandcore) {
+        GameRegistry.addRecipe(new ItemStack(this), "gg ", "gw ", "  w", 'g', Items.glowstone_dust, 'w', wandcore);
+    }
+
 }
