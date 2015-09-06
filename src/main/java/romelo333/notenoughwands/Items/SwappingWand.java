@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -128,7 +129,12 @@ public class SwappingWand extends GenericWand {
                 return;
             }
             if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
-                player.inventory.addItemStackToInventory(new ItemStack(oldblock, 1, oldmeta));
+                ItemStack oldStack = new ItemStack(oldblock, 1, oldmeta);
+                if (!player.inventory.addItemStackToInventory(oldStack)) {
+                    // Not enough room. Spawn item in world.
+                    EntityItem entityItem = new EntityItem(world, x, y, z, oldStack);
+                    world.spawnEntityInWorld(entityItem);
+                }
                 Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
                 player.openContainer.detectAndSendChanges();
