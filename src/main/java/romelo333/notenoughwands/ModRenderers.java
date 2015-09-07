@@ -17,17 +17,17 @@ public final class ModRenderers {
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.lightBlock), new LightItemRenderer());
     }
 
-    public static void renderBillboardQuad(double scale) {
+    public static void renderBillboardQuad(double scale, float vAdd1, float vAdd2) {
         GL11.glPushMatrix();
 
         rotateToPlayer();
 
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(-scale, -scale, 0, 0, 0);
-        tessellator.addVertexWithUV(-scale, +scale, 0, 0, 1);
-        tessellator.addVertexWithUV(+scale, +scale, 0, 1, 1);
-        tessellator.addVertexWithUV(+scale, -scale, 0, 1, 0);
+        tessellator.addVertexWithUV(-scale, -scale, 0, 0, 0+vAdd1);
+        tessellator.addVertexWithUV(-scale, +scale, 0, 0, 0+vAdd1+vAdd2);
+        tessellator.addVertexWithUV(+scale, +scale, 0, 1, 0+vAdd1+vAdd2);
+        tessellator.addVertexWithUV(+scale, -scale, 0, 1, 0+vAdd1);
         tessellator.draw();
         GL11.glPopMatrix();
     }

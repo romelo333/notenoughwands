@@ -38,7 +38,8 @@ public class LightItemRenderer implements IItemRenderer {
 
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
         GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-        ModRenderers.renderBillboardQuad(0.6f);
+        long t = System.currentTimeMillis() % 6;
+        ModRenderers.renderBillboardQuad(0.6f, t * (1.0f / 6.0f), (1.0f / 6.0f));
 
         GL11.glPopMatrix();
 
