@@ -182,7 +182,7 @@ public class SwappingWand extends GenericWand {
                 }
 
                 Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ, block, meta);
-                renderOutlines(evt, player, coordinates);
+                renderOutlines(evt, player, coordinates, 200, 230, 180);
             }
         }
     }

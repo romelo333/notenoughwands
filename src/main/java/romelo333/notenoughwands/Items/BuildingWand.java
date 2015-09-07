@@ -184,16 +184,39 @@ public class BuildingWand extends GenericWand{
     @SideOnly(Side.CLIENT)
     @Override
     public void renderOverlay(RenderWorldLastEvent evt, EntityClientPlayerMP player, ItemStack wand) {
-        if (player.isSneaking()) {
-            return; // @todo
-        }
         MovingObjectPosition mouseOver = Minecraft.getMinecraft().objectMouseOver;
         if (mouseOver != null) {
-            Block block = player.worldObj.getBlock(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
+            World world = player.worldObj;
+            int x = mouseOver.blockX;
+            int y = mouseOver.blockY;
+            int z = mouseOver.blockZ;
+            Block block = world.getBlock(x, y, z);
             if (block != null && block.getMaterial() != Material.air) {
-                int meta = player.worldObj.getBlockMetadata(mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ);
-                Set<Coordinate> coordinates = findSuitableBlocks(wand, player.worldObj, mouseOver.sideHit, mouseOver.blockX, mouseOver.blockY, mouseOver.blockZ, block, meta);
-                renderOutlines(evt, player, coordinates);
+                Set<Coordinate> coordinates;
+                int meta = world.getBlockMetadata(x, y, z);
+
+                if (player.isSneaking()) {
+                    NBTTagCompound wandTag = Tools.getTagCompound(wand);
+                    NBTTagCompound undoTag1 = (NBTTagCompound) wandTag.getTag("undo1");
+                    NBTTagCompound undoTag2 = (NBTTagCompound) wandTag.getTag("undo2");
+
+                    Set<Coordinate> undo1 = checkUndo(player, world, x, y, z, undoTag1);
+                    Set<Coordinate> undo2 = checkUndo(player, world, x, y, z, undoTag2);
+                    if (undo1 == null && undo2 == null) {
+                        return;
+                    }
+
+                    if (undo1 != null && undo1.contains(new Coordinate(x, y, z))) {
+                        coordinates = undo1;
+                        renderOutlines(evt, player, coordinates, 200, 30, 0);
+                    } else if (undo2 != null && undo2.contains(new Coordinate(x, y, z))) {
+                        coordinates = undo2;
+                        renderOutlines(evt, player, coordinates, 200, 30, 0);
+                    }
+                } else {
+                    coordinates = findSuitableBlocks(wand, world, mouseOver.sideHit, x, y, z, block, meta);
+                    renderOutlines(evt, player, coordinates, 200, 230, 180);
+                }
             }
         }
     }

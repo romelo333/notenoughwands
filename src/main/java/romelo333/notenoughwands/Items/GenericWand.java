@@ -199,7 +199,7 @@ public class GenericWand extends Item implements IEnergyContainerItem {
 
     }
 
-    protected static void renderOutlines(RenderWorldLastEvent evt, EntityClientPlayerMP p, Set<Coordinate> coordinates) {
+    protected static void renderOutlines(RenderWorldLastEvent evt, EntityClientPlayerMP p, Set<Coordinate> coordinates, int r, int g, int b) {
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * evt.partialTicks;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.partialTicks;
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.partialTicks;
@@ -212,9 +212,9 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         GL11.glPushMatrix();
         GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
 
-        renderLines(coordinates, 100, 30, 0);
+        renderLines(coordinates, r/2, g/2, b/2);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        renderLines(coordinates, 200, 30, 0);
+        renderLines(coordinates, r, g, b);
 
         GL11.glPopMatrix();
 
