@@ -23,7 +23,7 @@ import java.io.File;
         version = NotEnoughWands.VERSION)
 public class NotEnoughWands {
     public static final String MODID = "NotEnoughWands";
-    public static final String VERSION = "0.0.2";
+    public static final String VERSION = "1.0.0";
     public static final String MIN_FORGE_VER = "10.13.2.1291";
 
     @SidedProxy(clientSide="romelo333.notenoughwands.proxy.ClientProxy", serverSide="romelo333.notenoughwands.proxy.ServerProxy")
