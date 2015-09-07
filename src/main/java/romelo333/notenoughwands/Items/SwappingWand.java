@@ -77,8 +77,8 @@ public class SwappingWand extends GenericWand {
             list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[compound.getInteger("mode")]);
         }
         list.add("Sneak right click to select a block.");
-        list.add("Sneak right click in air to switch mode.");
         list.add("Right click on block to replace.");
+        list.add("Mode key (default '=') to switch mode.");
     }
 
     @Override
@@ -134,12 +134,7 @@ public class SwappingWand extends GenericWand {
                 return;
             }
             if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
-                ItemStack oldStack = new ItemStack(oldblock, 1, oldmeta);
-                if (!player.inventory.addItemStackToInventory(oldStack)) {
-                    // Not enough room. Spawn item in world.
-                    EntityItem entityItem = new EntityItem(world, x, y, z, oldStack);
-                    world.spawnEntityInWorld(entityItem);
-                }
+                Tools.giveItem(world, player, oldblock, oldmeta, 1, x, y, z);
                 Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
                 player.openContainer.detectAndSendChanges();
