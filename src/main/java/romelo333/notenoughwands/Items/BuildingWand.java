@@ -37,8 +37,8 @@ public class BuildingWand extends GenericWand{
             list.add(EnumChatFormatting.GREEN + "Has " + cnt + " undo states");
         }
         list.add("Right click to extend blocks in that direction.");
-        list.add("Sneak right click on such a block to undo last");
-        list.add("two operations.");
+        list.add("Sneak right click on such a block to undo one of");
+        list.add("the last two operations.");
     }
 
 
