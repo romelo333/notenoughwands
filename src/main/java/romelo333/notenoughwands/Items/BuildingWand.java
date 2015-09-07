@@ -27,15 +27,16 @@ public class BuildingWand extends GenericWand{
 
     public static final int MODE_FIRST = 0;
     public static final int MODE_9 = 0;
-    public static final int MODE_25 = 1;
-    public static final int MODE_SINGLE = 2;
+    public static final int MODE_9ROW = 1;
+    public static final int MODE_25 = 2;
+    public static final int MODE_SINGLE = 3;
     public static final int MODE_LAST = MODE_SINGLE;
 
     public static final String[] descriptions = new String[] {
-            "9 blocks", "25 blocks", "single"
+            "9 blocks", "9 blocks row", "25 blocks", "single"
     };
 
-    public static final int[] amount = new int[] { 9, 25, 1 };
+    public static final int[] amount = new int[] { 9, 9, 25, 1 };
 
     public BuildingWand() {
         setup("BuildingWand", "buildingWand").xpUsage(4).availability(AVAILABILITY_ADVANCED).loot(3);
@@ -144,8 +145,8 @@ public class BuildingWand extends GenericWand{
         NBTTagCompound undoTag1 = (NBTTagCompound) wandTag.getTag("undo1");
         NBTTagCompound undoTag2 = (NBTTagCompound) wandTag.getTag("undo2");
 
-        Set<Coordinate> undo1 = checkUndo(player, world, x, y, z, undoTag1);
-        Set<Coordinate> undo2 = checkUndo(player, world, x, y, z, undoTag2);
+        Set<Coordinate> undo1 = checkUndo(player, world, undoTag1);
+        Set<Coordinate> undo2 = checkUndo(player, world, undoTag2);
         if (undo1 == null && undo2 == null) {
             Tools.error(player, "Nothing to undo!");
             return;
@@ -190,7 +191,7 @@ public class BuildingWand extends GenericWand{
         }
     }
 
-    private Set<Coordinate> checkUndo(EntityPlayer player, World world, int x, int y, int z, NBTTagCompound undoTag) {
+    private Set<Coordinate> checkUndo(EntityPlayer player, World world, NBTTagCompound undoTag) {
         if (undoTag == null) {
             return null;
         }
@@ -230,8 +231,8 @@ public class BuildingWand extends GenericWand{
                     NBTTagCompound undoTag1 = (NBTTagCompound) wandTag.getTag("undo1");
                     NBTTagCompound undoTag2 = (NBTTagCompound) wandTag.getTag("undo2");
 
-                    Set<Coordinate> undo1 = checkUndo(player, world, x, y, z, undoTag1);
-                    Set<Coordinate> undo2 = checkUndo(player, world, x, y, z, undoTag2);
+                    Set<Coordinate> undo1 = checkUndo(player, world, undoTag1);
+                    Set<Coordinate> undo2 = checkUndo(player, world, undoTag2);
                     if (undo1 == null && undo2 == null) {
                         return;
                     }
@@ -259,31 +260,60 @@ public class BuildingWand extends GenericWand{
         Set<Coordinate> done = new HashSet<Coordinate>();
         Deque<Coordinate> todo = new ArrayDeque<Coordinate>();
         todo.addLast(base);
-        findSuitableBlocks(world, coordinates, done, todo, direction, block, meta, amount[getMode(stack)]);
+        findSuitableBlocks(world, coordinates, done, todo, direction, block, meta, amount[getMode(stack)], getMode(stack) == MODE_9ROW);
 
         return coordinates;
     }
 
-    private void findSuitableBlocks(World world, Set<Coordinate> coordinates, Set<Coordinate> done, Deque<Coordinate> todo, ForgeDirection direction, Block block, int meta, int maxAmount) {
+    private void findSuitableBlocks(World world, Set<Coordinate> coordinates, Set<Coordinate> done, Deque<Coordinate> todo, ForgeDirection direction, Block block, int meta, int maxAmount,
+                                    boolean rowMode) {
+
+        ForgeDirection dirA = null;
+        ForgeDirection dirB = null;
+        if (rowMode) {
+            Coordinate base = todo.getFirst();
+            Coordinate offset = base.add(direction);
+            dirA = dir1(direction);
+            dirB = dirA.getOpposite();
+            if (!isSuitable(world, block, meta, base.add(dirA), offset.add(dirA)) ||
+                !isSuitable(world, block, meta, base.add(dirB), offset.add(dirB))) {
+                dirA = dir2(direction);
+                dirB = dirA.getOpposite();
+                if (!isSuitable(world, block, meta, base.add(dirA), offset.add(dirA)) ||
+                        !isSuitable(world, block, meta, base.add(dirB), offset.add(dirB))) {
+                    return;
+                }
+            }
+        }
+
         while (!todo.isEmpty() && coordinates.size() < maxAmount) {
             Coordinate base = todo.pollFirst();
             if (!done.contains(base)) {
                 done.add(base);
                 Coordinate offset = base.add(direction);
-                if (world.getBlock(base.getX(), base.getY(), base.getZ()) == block && world.getBlockMetadata(base.getX(), base.getY(), base.getZ()) == meta &&
-                        world.isAirBlock(offset.getX(), offset.getY(), offset.getZ())) {
+                if (isSuitable(world, block, meta, base, offset)) {
                     coordinates.add(offset);
-                    todo.addLast(base.add(dir1(direction)));
-                    todo.addLast(base.add(dir1(direction).getOpposite()));
-                    todo.addLast(base.add(dir2(direction)));
-                    todo.addLast(base.add(dir2(direction).getOpposite()));
-                    todo.addLast(base.add(dir1(direction)).add(dir2(direction)));
-                    todo.addLast(base.add(dir1(direction)).add(dir2(direction).getOpposite()));
-                    todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction)));
-                    todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction).getOpposite()));
+                    if (rowMode) {
+                        todo.addLast(base.add(dirA));
+                        todo.addLast(base.add(dirB));
+                    } else {
+                        todo.addLast(base.add(dir1(direction)));
+                        todo.addLast(base.add(dir1(direction).getOpposite()));
+                        todo.addLast(base.add(dir2(direction)));
+                        todo.addLast(base.add(dir2(direction).getOpposite()));
+                        todo.addLast(base.add(dir1(direction)).add(dir2(direction)));
+                        todo.addLast(base.add(dir1(direction)).add(dir2(direction).getOpposite()));
+                        todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction)));
+                        todo.addLast(base.add(dir1(direction).getOpposite()).add(dir2(direction).getOpposite()));
+                    }
                 }
             }
         }
+    }
+
+    private boolean isSuitable(World world, Block block, int meta, Coordinate base, Coordinate offset) {
+        return world.getBlock(base.getX(), base.getY(), base.getZ()) == block && world.getBlockMetadata(base.getX(), base.getY(), base.getZ()) == meta &&
+                world.isAirBlock(offset.getX(), offset.getY(), offset.getZ());
     }
 
     private ForgeDirection dir1(ForgeDirection direction) {
