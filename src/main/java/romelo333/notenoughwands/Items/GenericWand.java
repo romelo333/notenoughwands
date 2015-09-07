@@ -212,7 +212,7 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         GL11.glPushMatrix();
         GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
 
-//        renderLines(coordinates, 200, 30, 0);
+        renderLines(coordinates, 100, 30, 0);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         renderLines(coordinates, 200, 30, 0);
 
@@ -236,14 +236,14 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         tessellator.setBrightness(240);
 
         GL11.glColor3ub((byte) r, (byte) g, (byte) b);
-        GL11.glLineWidth(6);
+        GL11.glLineWidth(2);  // 6
 
         for (Coordinate coordinate : coordinates) {
             float x = coordinate.getX();
             float y = coordinate.getY();
             float z = coordinate.getZ();
 
-            renderProtectionBlockOutline(tessellator, x, y, z, .02f);
+            renderProtectionBlockOutline(tessellator, x, y, z, .0f); // .02f
         }
         tessellator.draw();
     }
