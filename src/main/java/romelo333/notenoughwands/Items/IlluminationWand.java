@@ -2,12 +2,11 @@ package romelo333.notenoughwands.Items;
 
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import romelo333.notenoughwands.ModBlocks;
@@ -23,12 +22,19 @@ public class IlluminationWand extends GenericWand {
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);
         list.add("Right click on block to spawn light.");
+        list.add("Right click on light to remove it again.");
     }
 
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
+            Block block = world.getBlock(x, y, z);
+            if (block == ModBlocks.lightBlock) {
+                world.setBlockToAir(x, y, z);
+                return true;
+            }
+
             if (!checkUsage(stack, player, 1.0f)) {
                 return true;
             }
