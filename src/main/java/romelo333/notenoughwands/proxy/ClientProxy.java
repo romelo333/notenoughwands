@@ -14,6 +14,7 @@ import romelo333.notenoughwands.Items.GenericWand;
 import romelo333.notenoughwands.KeyBindings;
 import romelo333.notenoughwands.KeyInputHandler;
 import romelo333.notenoughwands.ModItems;
+import romelo333.notenoughwands.ModRenderers;
 
 public class ClientProxy extends CommonProxy {
 
@@ -25,7 +26,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-//        ModRenderers.init();
+        ModRenderers.init();
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(new KeyInputHandler());
         KeyBindings.init();

@@ -6,7 +6,7 @@ item.IlluminationWand.name=Illumination Wand
 item.WandCore.name=Wand Core
 item.AdvancedWandCore.name=Advanced Wand Core
 
-tile.lightBlock.name=Illuminating Orb
+tile.blockLight.name=Illuminating Orb
 
 
 key.modifier=Wand Modifier
