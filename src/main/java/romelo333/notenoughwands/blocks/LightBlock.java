@@ -1,17 +1,19 @@
 package romelo333.notenoughwands.blocks;
 
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -20,6 +22,7 @@ public class LightBlock extends Block implements ITileEntityProvider {
         super(Material.portal);
         setHardness(0.0f);
         setBlockName("blockLight");
+        setStepSound(Block.soundTypeCloth);
     }
 
     @Override
@@ -61,5 +64,15 @@ public class LightBlock extends Block implements ITileEntityProvider {
         return false;
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
+        return true;
+    }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
+        return true;
+    }
 }
