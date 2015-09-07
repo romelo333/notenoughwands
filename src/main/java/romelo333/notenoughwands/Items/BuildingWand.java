@@ -236,10 +236,10 @@ public class BuildingWand extends GenericWand{
 
                     if (undo1 != null && undo1.contains(new Coordinate(x, y, z))) {
                         coordinates = undo1;
-                        renderOutlines(evt, player, coordinates, 200, 30, 0);
+                        renderOutlines(evt, player, coordinates, 240, 30, 0);
                     } else if (undo2 != null && undo2.contains(new Coordinate(x, y, z))) {
                         coordinates = undo2;
-                        renderOutlines(evt, player, coordinates, 200, 30, 0);
+                        renderOutlines(evt, player, coordinates, 240, 30, 0);
                     }
                 } else {
                     coordinates = findSuitableBlocks(wand, world, mouseOver.sideHit, x, y, z, block, meta);
