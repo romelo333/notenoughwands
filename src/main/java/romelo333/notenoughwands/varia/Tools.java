@@ -1,6 +1,7 @@
 package romelo333.notenoughwands.varia;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -33,6 +34,15 @@ public class Tools {
             }
 
             return true;
+        }
+    }
+
+    public static void giveItem(World world, EntityPlayer player, Block block, int meta, int cnt, int x, int y, int z) {
+        ItemStack oldStack = new ItemStack(block, cnt, meta);
+        if (!player.inventory.addItemStackToInventory(oldStack)) {
+            // Not enough room. Spawn item in world.
+            EntityItem entityItem = new EntityItem(world, x, y, z, oldStack);
+            world.spawnEntityInWorld(entityItem);
         }
     }
 
