@@ -3,7 +3,10 @@ package romelo333.notenoughwands;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
+import romelo333.notenoughwands.blocks.LightItemRenderer;
 import romelo333.notenoughwands.blocks.LightRenderer;
 import romelo333.notenoughwands.blocks.LightTE;
 
@@ -11,6 +14,7 @@ public final class ModRenderers {
 
     public static void init() {
         ClientRegistry.bindTileEntitySpecialRenderer(LightTE.class, new LightRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.lightBlock), new LightItemRenderer());
     }
 
     public static void renderBillboardQuad(double scale) {

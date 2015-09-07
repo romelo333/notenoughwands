@@ -212,9 +212,9 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         GL11.glPushMatrix();
         GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
 
-        renderLines(coordinates, r/2, g/2, b/2);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        renderLines(coordinates, r, g, b);
+//        renderLines(coordinates, r/2, g/2, b/2, 2);
+//        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        renderLines(coordinates, r, g, b, 4);
 
         GL11.glPopMatrix();
 
@@ -228,7 +228,7 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         }
     }
 
-    private static void renderLines(Set<Coordinate> coordinates, int r, int g, int b) {
+    private static void renderLines(Set<Coordinate> coordinates, int r, int g, int b, int thickness) {
         Tessellator tessellator = Tessellator.instance;
 
         tessellator.startDrawing(GL11.GL_LINES);
@@ -236,7 +236,7 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         tessellator.setBrightness(240);
 
         GL11.glColor3ub((byte) r, (byte) g, (byte) b);
-        GL11.glLineWidth(2);  // 6
+        GL11.glLineWidth(thickness);
 
         for (Coordinate coordinate : coordinates) {
             float x = coordinate.getX();

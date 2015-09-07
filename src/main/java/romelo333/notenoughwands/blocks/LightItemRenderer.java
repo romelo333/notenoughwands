@@ -1,22 +1,33 @@
 package romelo333.notenoughwands.blocks;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import romelo333.notenoughwands.ModRenderers;
 import romelo333.notenoughwands.NotEnoughWands;
 
 @SideOnly(Side.CLIENT)
-public class LightRenderer extends TileEntitySpecialRenderer {
+public class LightItemRenderer implements IItemRenderer {
     ResourceLocation texture = new ResourceLocation(NotEnoughWands.MODID.toLowerCase(), "textures/blocks/light.png");
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float time) {
-        bindTexture(texture);
+    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+        return true;
+    }
+
+    @Override
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(texture);
 
         GL11.glPushMatrix();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -25,7 +36,7 @@ public class LightRenderer extends TileEntitySpecialRenderer {
         boolean blending = GL11.glIsEnabled(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_BLEND);
 
-        GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
+        GL11.glTranslatef(0.5F, 0.5F, 0.5F);
         GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
         ModRenderers.renderBillboardQuad(0.6f);
 
