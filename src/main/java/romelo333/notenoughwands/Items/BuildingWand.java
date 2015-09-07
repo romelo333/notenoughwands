@@ -178,6 +178,7 @@ public class BuildingWand extends GenericWand{
             Block testBlock = world.getBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ());
             int testMeta = world.getBlockMetadata(coordinate.getX(), coordinate.getY(), coordinate.getZ());
             if (testBlock == block && testMeta == meta) {
+                Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlockToAir(coordinate.getX(), coordinate.getY(), coordinate.getZ());
                 cnt++;
             }
