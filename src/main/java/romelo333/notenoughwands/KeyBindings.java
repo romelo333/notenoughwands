@@ -12,7 +12,7 @@ public class KeyBindings {
     public static KeyBinding wandModifier;
 
     public static void init() {
-        wandModifier = new KeyBinding("key.modifier", Keyboard.KEY_BACKSLASH, "key.categories.notenoughwands");
+        wandModifier = new KeyBinding("key.modifier", Keyboard.KEY_EQUALS, "key.categories.notenoughwands");
         ClientRegistry.registerKeyBinding(wandModifier);
     }
 }
