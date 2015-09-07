@@ -48,6 +48,7 @@ public class BuildingWand extends GenericWand{
         if (compound != null) {
             int cnt = (compound.hasKey("undo1") ? 1 : 0) + (compound.hasKey("undo2") ? 1 : 0);
             list.add(EnumChatFormatting.GREEN + "Has " + cnt + " undo states");
+            list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[compound.getInteger("mode")]);
         }
         list.add("Right click to extend blocks in that direction.");
         list.add("Sneak right click on such a block to undo one of");
