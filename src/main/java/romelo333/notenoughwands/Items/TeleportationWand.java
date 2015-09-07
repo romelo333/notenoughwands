@@ -24,7 +24,7 @@ public class TeleportationWand extends GenericWand {
     private int maxdist = 30;
 
     public TeleportationWand() {
-        setup("TeleportationWand", "teleportationWand").xpUsage(10).availability(AVAILABILITY_NORMAL).loot(6);
+        setup("TeleportationWand", "teleportationWand").xpUsage(4).availability(AVAILABILITY_NORMAL).loot(6);
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class IlluminationWand extends GenericWand {
     public IlluminationWand() {
-        setup("IlluminationWand", "illuminationWand").xpUsage(10).availability(AVAILABILITY_NORMAL).loot(6);
+        setup("IlluminationWand", "illuminationWand").xpUsage(3).availability(AVAILABILITY_NORMAL).loot(6);
     }
 
     @Override

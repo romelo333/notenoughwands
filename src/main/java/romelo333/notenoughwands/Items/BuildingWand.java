@@ -25,7 +25,7 @@ import java.util.*;
 
 public class BuildingWand extends GenericWand{
     public BuildingWand() {
-        setup("BuildingWand", "buildingWand").xpUsage(10).availability(AVAILABILITY_ADVANCED).loot(3);
+        setup("BuildingWand", "buildingWand").xpUsage(5).availability(AVAILABILITY_ADVANCED).loot(3);
     }
 
     @Override
