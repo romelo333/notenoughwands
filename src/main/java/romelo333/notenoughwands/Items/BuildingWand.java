@@ -24,6 +24,19 @@ import romelo333.notenoughwands.varia.Tools;
 import java.util.*;
 
 public class BuildingWand extends GenericWand{
+
+    public static final int MODE_FIRST = 0;
+    public static final int MODE_9 = 0;
+    public static final int MODE_18 = 1;
+    public static final int MODE_SINGLE = 2;
+    public static final int MODE_LAST = MODE_SINGLE;
+
+    public static final String[] descriptions = new String[] {
+            "9 blocks", "18 blocks", "single"
+    };
+
+    public static final int[] amount = new int[] { 9, 18, 1 };
+
     public BuildingWand() {
         setup("BuildingWand", "buildingWand").xpUsage(4).availability(AVAILABILITY_ADVANCED).loot(3);
     }
@@ -39,8 +52,23 @@ public class BuildingWand extends GenericWand{
         list.add("Right click to extend blocks in that direction.");
         list.add("Sneak right click on such a block to undo one of");
         list.add("the last two operations.");
+        list.add("Mode key (default '=') to switch mode.");
     }
 
+    @Override
+    public void toggleMode(EntityPlayer player, ItemStack stack) {
+        int mode = getMode(stack);
+        mode++;
+        if (mode > MODE_LAST) {
+            mode = MODE_FIRST;
+        }
+        Tools.notify(player, "Switched to " + descriptions[mode] + " mode");
+        Tools.getTagCompound(stack).setInteger("mode", mode);
+    }
+
+    private int getMode(ItemStack stack) {
+        return Tools.getTagCompound(stack).getInteger("mode");
+    }
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
@@ -229,13 +257,13 @@ public class BuildingWand extends GenericWand{
         Set<Coordinate> done = new HashSet<Coordinate>();
         Deque<Coordinate> todo = new ArrayDeque<Coordinate>();
         todo.addLast(base);
-        findSuitableBlocks(world, coordinates, done, todo, direction, block, meta);
+        findSuitableBlocks(world, coordinates, done, todo, direction, block, meta, amount[getMode(stack)]);
 
         return coordinates;
     }
 
-    private void findSuitableBlocks(World world, Set<Coordinate> coordinates, Set<Coordinate> done, Deque<Coordinate> todo, ForgeDirection direction, Block block, int meta) {
-        while (!todo.isEmpty() && coordinates.size() < 9) {
+    private void findSuitableBlocks(World world, Set<Coordinate> coordinates, Set<Coordinate> done, Deque<Coordinate> todo, ForgeDirection direction, Block block, int meta, int maxAmount) {
+        while (!todo.isEmpty() && coordinates.size() < maxAmount) {
             Coordinate base = todo.pollFirst();
             if (!done.contains(base)) {
                 done.add(base);

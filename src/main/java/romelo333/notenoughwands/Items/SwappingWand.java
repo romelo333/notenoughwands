@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -30,15 +29,17 @@ import java.util.Set;
 
 public class SwappingWand extends GenericWand {
 
-    public static final int MODE_SINGLE = 0;
-    public static final int MODE_3X3 = 1;
-    public static final int MODE_5X5 = 2;
-    public static final int MODE_7X7 = 3;
+    public static final int MODE_FIRST = 0;
+    public static final int MODE_3X3 = 0;
+    public static final int MODE_5X5 = 1;
+    public static final int MODE_7X7 = 2;
+    public static final int MODE_SINGLE = 3;
+    public static final int MODE_LAST = MODE_SINGLE;
 
     private float hardnessDistance = 35.0f;
 
     public static final String[] descriptions = new String[] {
-        "single", "3x3", "5x5", "7x7"
+        "3x3", "5x5", "7x7", "single"
     };
 
     public SwappingWand() {
@@ -55,8 +56,8 @@ public class SwappingWand extends GenericWand {
     public void toggleMode(EntityPlayer player, ItemStack stack) {
         int mode = getMode(stack);
         mode++;
-        if (mode > MODE_5X5) {
-            mode = MODE_SINGLE;
+        if (mode > MODE_LAST) {
+            mode = MODE_FIRST;
         }
         Tools.notify(player, "Switched to " + descriptions[mode] + " mode");
         Tools.getTagCompound(stack).setInteger("mode", mode);
