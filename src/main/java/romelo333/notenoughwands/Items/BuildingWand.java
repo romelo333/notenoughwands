@@ -27,15 +27,15 @@ public class BuildingWand extends GenericWand{
 
     public static final int MODE_FIRST = 0;
     public static final int MODE_9 = 0;
-    public static final int MODE_18 = 1;
+    public static final int MODE_25 = 1;
     public static final int MODE_SINGLE = 2;
     public static final int MODE_LAST = MODE_SINGLE;
 
     public static final String[] descriptions = new String[] {
-            "9 blocks", "18 blocks", "single"
+            "9 blocks", "25 blocks", "single"
     };
 
-    public static final int[] amount = new int[] { 9, 18, 1 };
+    public static final int[] amount = new int[] { 9, 25, 1 };
 
     public BuildingWand() {
         setup("BuildingWand", "buildingWand").xpUsage(4).availability(AVAILABILITY_ADVANCED).loot(3);
