@@ -1,8 +1,11 @@
 package romelo333.notenoughwands.Items;
 
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -57,10 +60,6 @@ public class MovingWand extends GenericWand {
     }
 
     private void place(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side) {
-        if (!checkUsage(stack, player, 1.0f)) {
-            return;
-        }
-
         int xx = x + ForgeDirection.getOrientation(side).offsetX;
         int yy = y + ForgeDirection.getOrientation(side).offsetY;
         int zz = z + ForgeDirection.getOrientation(side).offsetZ;
@@ -69,12 +68,15 @@ public class MovingWand extends GenericWand {
         Block block = (Block) Block.blockRegistry.getObjectById(id);
         int meta = tagCompound.getInteger("meta");
 
-        world.setBlock(xx,yy,zz,block,meta,3);
-        registerUsage(stack, player, 1.0f);
+        world.setBlock(xx, yy, zz, block, meta, 3);
         stack.setTagCompound(null);
     }
 
     private void pickup(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
+        if (!checkUsage(stack, player, 1.0f)) {
+            return;
+        }
+
         Block block = world.getBlock(x, y, z);
         int meta = world.getBlockMetadata(x, y, z);
         float hardness = block.getBlockHardness(world, x, y, z);
@@ -97,5 +99,11 @@ public class MovingWand extends GenericWand {
             world.setBlockToAir(x, y, z);
             Tools.notify(player, "You took: " + name);
         }
+        registerUsage(stack, player, 1.0f);
+    }
+
+    @Override
+    protected void setupCraftingInt(Item wandcore) {
+        GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.redstone, 'e', Items.ender_pearl, 'w', wandcore);
     }
 }
