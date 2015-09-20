@@ -11,6 +11,7 @@ public class ModItems {
     public static CapturingWand capturingWand;
     public static BuildingWand buildingWand;
     public static IlluminationWand illuminationWand;
+    public static MovingWand movingWand;
 
     public static void init() {
         wandCore = new WandCore("WandCore", "wandCore");
@@ -20,5 +21,6 @@ public class ModItems {
         capturingWand = new CapturingWand();
         buildingWand = new BuildingWand();
         illuminationWand = new IlluminationWand();
+        movingWand = new MovingWand();
     }
 }
