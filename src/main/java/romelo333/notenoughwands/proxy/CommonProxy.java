@@ -28,7 +28,7 @@ public abstract class CommonProxy {
         Configuration cfg = mainConfig;
         try {
             cfg.load();
-            cfg.addCustomCategoryComment(Config.CATEGORY_WANDS, "Configuration for wodlgen");
+            cfg.addCustomCategoryComment(Config.CATEGORY_WANDS, "Wand configuration");
             Config.init(cfg);
         } catch (Exception e1) {
             NotEnoughWands.logger.log(Level.ERROR, "Problem loading config file!", e1);
