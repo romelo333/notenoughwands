@@ -8,6 +8,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
@@ -69,6 +70,20 @@ public class MovingWand extends GenericWand {
         int meta = tagCompound.getInteger("meta");
 
         world.setBlock(xx, yy, zz, block, meta, 3);
+        world.setBlockMetadataWithNotify(xx, yy, zz, meta, 3);
+        if (tagCompound.hasKey("tedata")) {
+            NBTTagCompound tc = (NBTTagCompound) tagCompound.getTag("tedata");
+            TileEntity tileEntity = world.getTileEntity(xx, yy, zz);
+            if (tileEntity != null) {
+                tc.setInteger("x", xx);
+                tc.setInteger("y", yy);
+                tc.setInteger("z", zz);
+                tileEntity.readFromNBT(tc);
+                tileEntity.markDirty();
+                world.markBlockForUpdate(xx, yy, zz);
+            }
+        }
+
         stack.setTagCompound(null);
     }
 
@@ -88,6 +103,7 @@ public class MovingWand extends GenericWand {
             Tools.error(player,"You are not allowed to take this block");
             return;
         }
+
         NBTTagCompound tagCompound = Tools.getTagCompound(stack);
         String name = Tools.getBlockName(block, meta);
         if (name == null) {
@@ -96,7 +112,19 @@ public class MovingWand extends GenericWand {
             int id = Block.blockRegistry.getIDForObject(block);
             tagCompound.setInteger("block", id);
             tagCompound.setInteger("meta", meta);
+
+            TileEntity tileEntity = world.getTileEntity(x, y, z);
+            if (tileEntity != null) {
+                NBTTagCompound tc = new NBTTagCompound();
+                tileEntity.writeToNBT(tc);
+                world.removeTileEntity(x, y, z);
+                tc.removeTag("x");
+                tc.removeTag("y");
+                tc.removeTag("z");
+                tagCompound.setTag("tedata", tc);
+            }
             world.setBlockToAir(x, y, z);
+
             Tools.notify(player, "You took: " + name);
         }
         registerUsage(stack, player, 1.0f);
