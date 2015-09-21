@@ -3,6 +3,7 @@ item.TeleportationWand.name=Teleportation Wand
 item.CapturingWand.name=Capturing Wand
 item.BuildingWand.name=Building Wand
 item.IlluminationWand.name=Illumination Wand
+item.MovingWand.name=Moving Wand
 item.WandCore.name=Wand Core
 item.AdvancedWandCore.name=Advanced Wand Core
 
