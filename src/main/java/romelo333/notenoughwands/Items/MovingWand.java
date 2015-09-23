@@ -64,7 +64,7 @@ public class MovingWand extends GenericWand {
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);
         NBTTagCompound compound = stack.getTagCompound();
-        if (compound == null) {
+        if (!hasBlock(compound)) {
             list.add(EnumChatFormatting.RED + "Wand is empty.");
         } else {
             int id = compound.getInteger("block");
@@ -77,14 +77,18 @@ public class MovingWand extends GenericWand {
         list.add("Right click again on block to place it down.");
     }
 
+    private boolean hasBlock(NBTTagCompound compound) {
+        return compound != null && compound.hasKey("block");
+    }
+
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
             NBTTagCompound compound = stack.getTagCompound();
-            if (compound == null) {
-                pickup(stack, player, world, x, y, z);
-            } else {
+            if (hasBlock(compound)) {
                 place(stack, player, world, x, y, z, side);
+            } else {
+                pickup(stack, player, world, x, y, z);
             }
         }
         return true;
@@ -114,7 +118,10 @@ public class MovingWand extends GenericWand {
             }
         }
 
-        stack.setTagCompound(null);
+        tagCompound.removeTag("block");
+        tagCompound.removeTag("tedata");
+        tagCompound.removeTag("meta");
+        stack.setTagCompound(tagCompound);
     }
 
     private void pickup(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
@@ -126,7 +133,7 @@ public class MovingWand extends GenericWand {
             Tools.error(player, "This block is to hard to take.");
             return;
         }
-        if (!block.canEntityDestroy(world,x,y,z,player)){
+        if (!block.canEntityDestroy(world, x, y, z, player)){
             Tools.error(player, "You are not allowed to take this block");
             return;
         }
@@ -166,8 +173,8 @@ public class MovingWand extends GenericWand {
             world.setBlockToAir(x, y, z);
 
             Tools.notify(player, "You took: " + name);
+            registerUsage(stack, player, (float) cost);
         }
-        registerUsage(stack, player, (float) cost);
     }
 
     @Override
