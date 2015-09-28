@@ -7,10 +7,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import mcp.mobius.waila.network.NetworkHandler;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +32,6 @@ public class NotEnoughWands {
     public static File mainConfigDir;
     public static File modConfigDir;
     public static Configuration config;
-    public static NetworkHandler networkHandler;
 
     public static CreativeTabs tabNew = new CreativeTabs("NotEnoughWands") {
         @Override

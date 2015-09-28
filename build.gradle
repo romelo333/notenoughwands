@@ -87,7 +87,6 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile "mcp.mobius.waila:Waila:1.5.10_1.7.10"
     // compile "com.enderio:EnderIO:1.7.10-2.2.7.331"
     compile "li.cil.oc:OpenComputers:MC1.7.10-1.4.+:api"
 
