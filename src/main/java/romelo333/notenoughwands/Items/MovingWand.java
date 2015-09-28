@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 public class MovingWand extends GenericWand {
     private float maxHardness = 50;
+    private int placeDistance = 4;
     private Map<String,Double> blacklisted = new HashMap<String, Double>();
 
     public MovingWand() {
@@ -34,6 +37,8 @@ public class MovingWand extends GenericWand {
     public void initConfig(Configuration cfg) {
         super.initConfig(cfg);
         maxHardness = (float) cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_maxHardness", maxHardness, "Max hardness this block can move.)").getDouble();
+        placeDistance = cfg.get(Config.CATEGORY_WANDS, getUnlocalizedName() + "_placeDistance", placeDistance, "Distance at which to place blocks in 'in-air' mode").getInt();
+
         ConfigCategory category = cfg.getCategory(Config.CATEGORY_MOVINGBLACKLIST);
         if (category.isEmpty()) {
             // Initialize with defaults
@@ -75,6 +80,7 @@ public class MovingWand extends GenericWand {
         }
         list.add("Right click to take a block.");
         list.add("Right click again on block to place it down.");
+        list.add("Mode key (default '=') to switch mode.");
     }
 
     private boolean hasBlock(NBTTagCompound compound) {
@@ -82,11 +88,29 @@ public class MovingWand extends GenericWand {
     }
 
     @Override
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        if (!world.isRemote) {
+            NBTTagCompound compound = stack.getTagCompound();
+            if (hasBlock(compound)) {
+                Vec3 lookVec = player.getLookVec();
+                Vec3 start = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
+                int distance = this.placeDistance;
+                Vec3 end = start.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+                MovingObjectPosition position = world.rayTraceBlocks(start, end);
+                if (position == null) {
+                    place(stack, world, (int) end.xCoord, (int) end.yCoord, (int) end.zCoord, ForgeDirection.UNKNOWN.ordinal());
+                }
+            }
+        }
+        return stack;
+    }
+
+    @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
             NBTTagCompound compound = stack.getTagCompound();
             if (hasBlock(compound)) {
-                place(stack, player, world, x, y, z, side);
+                place(stack, world, x, y, z, side);
             } else {
                 pickup(stack, player, world, x, y, z);
             }
@@ -94,7 +118,7 @@ public class MovingWand extends GenericWand {
         return true;
     }
 
-    private void place(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side) {
+    private void place(ItemStack stack, World world, int x, int y, int z, int side) {
         int xx = x + ForgeDirection.getOrientation(side).offsetX;
         int yy = y + ForgeDirection.getOrientation(side).offsetY;
         int zz = z + ForgeDirection.getOrientation(side).offsetZ;
