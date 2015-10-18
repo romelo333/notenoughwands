@@ -54,6 +54,10 @@ public class ProtectedBlocks extends WorldSavedData{
         return blocks.contains(new GlobalCoordinate(x,y,z,world.provider.dimensionId));
     }
 
+    public boolean hasProtections() {
+        return !blocks.isEmpty();
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         blocks.clear();
