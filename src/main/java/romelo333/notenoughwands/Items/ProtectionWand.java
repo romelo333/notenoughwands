@@ -35,12 +35,19 @@ public class ProtectionWand extends GenericWand{
 
     public static int blockShowRadius = 10;
 
+    private final boolean master;
+
     public static final String[] descriptions = new String[] {
             "protect", "unprotect"
     };
 
-    public ProtectionWand() {
-        setup("ProtectionWand", "protectionWand").xpUsage(10).availability(AVAILABILITY_CREATIVE).loot(0);
+    public ProtectionWand(boolean master) {
+        if (master) {
+            setup("MasterProtectionWand", "masterProtectionWand").xpUsage(0).availability(AVAILABILITY_CREATIVE).loot(0);
+        } else {
+            setup("ProtectionWand", "protectionWand").xpUsage(10).availability(AVAILABILITY_CREATIVE).loot(0);
+        }
+        this.master = master;
     }
 
     @Override
@@ -54,9 +61,13 @@ public class ProtectionWand extends GenericWand{
         super.addInformation(stack, player, list, b);
         int mode = getMode(stack);
         list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[mode]);
-        int id = getId(stack);
-        if (id != 0) {
-            list.add(EnumChatFormatting.GREEN + "Id: " + id);
+        if (master) {
+            list.add(EnumChatFormatting.YELLOW + "Master wand");
+        } else {
+            int id = getId(stack);
+            if (id != 0) {
+                list.add(EnumChatFormatting.GREEN + "Id: " + id);
+            }
         }
         list.add("Rigth click to protect or unprotect a block.");
         list.add("Mode key (default '=') to switch mode.");
@@ -77,7 +88,10 @@ public class ProtectionWand extends GenericWand{
         return Tools.getTagCompound(stack).getInteger("mode");
     }
 
-    private int getId(ItemStack stack) {
+    public int getId(ItemStack stack) {
+        if (master) {
+            return -1;
+        }
         return Tools.getTagCompound(stack).getInteger("id");
     }
 
@@ -89,6 +103,9 @@ public class ProtectionWand extends GenericWand{
         if ((System.currentTimeMillis() - lastTime) > 250) {
             lastTime = System.currentTimeMillis();
             PacketHandler.INSTANCE.sendToServer(new PacketGetProtectedBlocks());
+        }
+        if (master) {
+            renderOutlines(evt, player, ReturnProtectedBlocksHelper.childBlocks, 30, 30, 200);
         }
         renderOutlines(evt, player, ReturnProtectedBlocksHelper.blocks, 210, 60, 40);
     }
@@ -126,7 +143,11 @@ public class ProtectionWand extends GenericWand{
 
     @Override
     protected void setupCraftingInt(Item wandcore) {
-        GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.comparator, 'e', Items.ender_eye, 'w', wandcore);
+        if (master) {
+            GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.comparator, 'e', Items.nether_star, 'w', wandcore);
+        } else {
+            GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.comparator, 'e', Items.ender_eye, 'w', wandcore);
+        }
     }
 
 }

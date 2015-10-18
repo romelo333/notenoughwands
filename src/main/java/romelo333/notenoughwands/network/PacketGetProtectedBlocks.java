@@ -37,12 +37,18 @@ public class PacketGetProtectedBlocks implements IMessage,IMessageHandler<Packet
             // Cannot happen normally
             return null;
         }
-        int id = Tools.getTagCompound(heldItem).getInteger("id");
+        ProtectionWand protectionWand = (ProtectionWand) heldItem.getItem();
+        int id = protectionWand.getId(heldItem);
 
         ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
         Set<Coordinate> blocks = new HashSet<Coordinate>();
         protectedBlocks.fetchProtectedBlocks(blocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, ProtectionWand.blockShowRadius, id);
-        return new PacketReturnProtectedBlocks(blocks);
+        Set<Coordinate> childBlocks = new HashSet<Coordinate>();
+        if (id == -1) {
+            // Master wand:
+            protectedBlocks.fetchProtectedBlocks(childBlocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, ProtectionWand.blockShowRadius, -2);
+        }
+        return new PacketReturnProtectedBlocks(blocks, childBlocks);
     }
 
 }

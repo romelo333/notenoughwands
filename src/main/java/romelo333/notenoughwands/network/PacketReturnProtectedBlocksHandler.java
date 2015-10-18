@@ -7,7 +7,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 public class PacketReturnProtectedBlocksHandler implements IMessageHandler<PacketReturnProtectedBlocks, IMessage> {
     @Override
     public IMessage onMessage(PacketReturnProtectedBlocks message, MessageContext ctx) {
-        ReturnProtectedBlocksHelper.setDestinationInfo(message);
+        ReturnProtectedBlocksHelper.setProtectedBlocks(message);
         return null;
     }
 

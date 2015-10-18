@@ -53,7 +53,7 @@ public class ProtectedBlocks extends WorldSavedData{
 
     public boolean protect(EntityPlayer player, World world, int x, int y, int z, int id) {
         GlobalCoordinate key = new GlobalCoordinate(x, y, z, world.provider.dimensionId);
-        if (blocks.containsKey(key)) {
+        if (id != -1 && blocks.containsKey(key)) {
             Tools.error(player, "This block is already protected!");
             return false;
         }
@@ -68,7 +68,7 @@ public class ProtectedBlocks extends WorldSavedData{
             Tools.error(player, "This block is not prorected!");
             return false;
         }
-        if (blocks.get(key) != id) {
+        if (id != -1 && blocks.get(key) != id) {
             Tools.error(player, "You have no permission to unprotect this block!");
             return false;
         }
@@ -88,7 +88,7 @@ public class ProtectedBlocks extends WorldSavedData{
     public void fetchProtectedBlocks(Set<Coordinate> coordinates, World world, int x, int y, int z, float radius, int id) {
         radius *= radius;
         for (Map.Entry<GlobalCoordinate, Integer> entry : blocks.entrySet()) {
-            if (entry.getValue() == id) {
+            if (entry.getValue() == id || (id == -2 && entry.getValue() != -1)) {
                 GlobalCoordinate block = entry.getKey();
                 if (block.getDim() == world.provider.dimensionId) {
                     float sqdist = (x - block.getX()) * (x - block.getX()) + (y - block.getY()) * (y - block.getY()) + (z - block.getZ()) * (z - block.getZ());

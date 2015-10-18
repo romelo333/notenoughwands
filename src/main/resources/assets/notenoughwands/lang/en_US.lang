@@ -5,6 +5,7 @@ item.BuildingWand.name=Building Wand
 item.IlluminationWand.name=Illumination Wand
 item.MovingWand.name=Moving Wand
 item.ProtectionWand.name=Protection Wand
+item.MasterProtectionWand.name=Master Protection Wand
 item.WandCore.name=Wand Core
 item.AdvancedWandCore.name=Advanced Wand Core
 

@@ -9,6 +9,7 @@ import java.util.Set;
 
 public class PacketReturnProtectedBlocks implements IMessage {
     private Set<Coordinate> blocks;
+    private Set<Coordinate> childBlocks;
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -16,6 +17,11 @@ public class PacketReturnProtectedBlocks implements IMessage {
         blocks = new HashSet<Coordinate>(size);
         for (int i = 0 ; i < size ; i++) {
             blocks.add(new Coordinate(buf.readInt(), buf.readInt(), buf.readInt()));
+        }
+        size = buf.readInt();
+        childBlocks = new HashSet<Coordinate>(size);
+        for (int i = 0 ; i < size ; i++) {
+            childBlocks.add(new Coordinate(buf.readInt(), buf.readInt(), buf.readInt()));
         }
     }
 
@@ -27,6 +33,12 @@ public class PacketReturnProtectedBlocks implements IMessage {
             buf.writeInt(block.getY());
             buf.writeInt(block.getZ());
         }
+        buf.writeInt(childBlocks.size());
+        for (Coordinate block : childBlocks) {
+            buf.writeInt(block.getX());
+            buf.writeInt(block.getY());
+            buf.writeInt(block.getZ());
+        }
     }
 
 
@@ -34,10 +46,15 @@ public class PacketReturnProtectedBlocks implements IMessage {
         return blocks;
     }
 
+    public Set<Coordinate> getChildBlocks() {
+        return childBlocks;
+    }
+
     public PacketReturnProtectedBlocks() {
     }
 
-    public PacketReturnProtectedBlocks(Set<Coordinate> blocks) {
+    public PacketReturnProtectedBlocks(Set<Coordinate> blocks, Set<Coordinate> childBlocks) {
         this.blocks = blocks;
+        this.childBlocks = childBlocks;
     }
 }

@@ -10,9 +10,11 @@ import java.util.Set;
 @SideOnly(Side.CLIENT)
 public class ReturnProtectedBlocksHelper {
     public static Set<Coordinate> blocks = new HashSet<Coordinate>();
+    public static Set<Coordinate> childBlocks = new HashSet<Coordinate>();
 
-    public static void setDestinationInfo(PacketReturnProtectedBlocks message) {
+    public static void setProtectedBlocks(PacketReturnProtectedBlocks message) {
         blocks = message.getBlocks();
+        childBlocks = message.getChildBlocks();
     }
 
 }
