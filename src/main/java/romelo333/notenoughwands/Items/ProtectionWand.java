@@ -52,9 +52,12 @@ public class ProtectionWand extends GenericWand{
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);
-        NBTTagCompound compound = stack.getTagCompound();
         int mode = getMode(stack);
         list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[mode]);
+        int id = getId(stack);
+        if (id != 0) {
+            list.add(EnumChatFormatting.GREEN + "Id: " + id);
+        }
         list.add("Rigth click to protect or unprotect a block.");
         list.add("Mode key (default '=') to switch mode.");
     }
@@ -74,6 +77,10 @@ public class ProtectionWand extends GenericWand{
         return Tools.getTagCompound(stack).getInteger("mode");
     }
 
+    private int getId(ItemStack stack) {
+        return Tools.getTagCompound(stack).getInteger("id");
+    }
+
     private static long lastTime = 0;
 
     @SideOnly(Side.CLIENT)
@@ -83,24 +90,38 @@ public class ProtectionWand extends GenericWand{
             lastTime = System.currentTimeMillis();
             PacketHandler.INSTANCE.sendToServer(new PacketGetProtectedBlocks());
         }
-        renderOutlines(evt, player, ReturnProtectedBlocksHelper.blocks, 210, 100, 40);
+        renderOutlines(evt, player, ReturnProtectedBlocksHelper.blocks, 210, 60, 40);
     }
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
         if (!world.isRemote) {
             ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
+            int id = getOrCreateId(stack, world, protectedBlocks);
             if (getMode(stack) == MODE_PROTECT) {
                 if (!checkUsage(stack, player, 1.0f)) {
                     return true;
                 }
-                protectedBlocks.protect(world,x,y,z);
+                if (!protectedBlocks.protect(player, world, x, y, z, id)) {
+                    return true;
+                }
                 registerUsage(stack, player, 1.0f);
             } else {
-                protectedBlocks.unprotect(world,x,y,z);
+                if (!protectedBlocks.unprotect(player, world, x, y, z, id)) {
+                    return true;
+                }
             }
         }
         return true;
+    }
+
+    private int getOrCreateId(ItemStack stack, World world, ProtectedBlocks protectedBlocks) {
+        int id = getId(stack);
+        if (id == 0) {
+            id = protectedBlocks.getNewId(world);
+            Tools.getTagCompound(stack).setInteger("id", id);
+        }
+        return id;
     }
 
     @Override
