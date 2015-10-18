@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Level;
 import romelo333.notenoughwands.*;
 import romelo333.notenoughwands.Items.GenericWand;
 import romelo333.notenoughwands.network.PacketHandler;
+import romelo333.notenoughwands.varia.WrenchChecker;
 
 public abstract class CommonProxy {
 
@@ -49,6 +50,7 @@ public abstract class CommonProxy {
             mainConfig.save();
         }
         mainConfig = null;
+        WrenchChecker.init();
     }
 
 }

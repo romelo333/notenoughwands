@@ -1,10 +1,15 @@
 package romelo333.notenoughwands;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import romelo333.notenoughwands.varia.WrenchChecker;
 
+import java.util.Collection;
 import java.util.List;
 
 public class ForgeEventHandlers {
@@ -36,6 +41,23 @@ public class ForgeEventHandlers {
             }
         }
     }
+
+    @SubscribeEvent
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        ItemStack heldItem = event.entityPlayer.getHeldItem();
+        if (heldItem == null || heldItem.getItem() == null) {
+            return;
+        }
+        if (event.entityPlayer.isSneaking() && WrenchChecker.isAWrench(heldItem.getItem())) {
+            // If the block is protected we prevent sneak-wrenching it.
+            ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(event.world);
+            if (protectedBlocks != null && protectedBlocks.isProtected(event.world, event.x, event.y, event.z)) {
+                event.setCanceled(true);
+            }
+        }
+
+    }
+
 
 
 }
