@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
+import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.GlobalCoordinate;
 
 import java.util.HashSet;
@@ -40,22 +41,34 @@ public class ProtectedBlocks extends WorldSavedData{
         return instance;
     }
 
-    public void protect (World world,int x,int y, int z){
+    public void protect(World world,int x,int y, int z){
         blocks.add(new GlobalCoordinate(x,y,z,world.provider.dimensionId));
         save(world);
     }
 
-    public void unprotect (World world,int x,int y, int z){
+    public void unprotect(World world,int x,int y, int z){
         blocks.remove(new GlobalCoordinate(x, y, z, world.provider.dimensionId));
         save(world);
     }
 
-    public boolean isProtected (World world,int x,int y, int z){
+    public boolean isProtected(World world,int x,int y, int z){
         return blocks.contains(new GlobalCoordinate(x,y,z,world.provider.dimensionId));
     }
 
     public boolean hasProtections() {
         return !blocks.isEmpty();
+    }
+
+    public void fetchProtectedBlocks(Set<Coordinate> coordinates, World world, int x, int y, int z, float radius) {
+        radius *= radius;
+        for (GlobalCoordinate block : blocks) {
+            if (block.getDim() == world.provider.dimensionId) {
+                float sqdist = (x-block.getX()) * (x-block.getX()) + (y-block.getY()) * (y-block.getY()) + (z-block.getZ()) * (z-block.getZ());
+                if (sqdist < radius) {
+                    coordinates.add(block);
+                }
+            }
+        }
     }
 
     @Override
