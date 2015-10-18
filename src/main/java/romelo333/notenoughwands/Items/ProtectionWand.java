@@ -83,7 +83,7 @@ public class ProtectionWand extends GenericWand{
             lastTime = System.currentTimeMillis();
             PacketHandler.INSTANCE.sendToServer(new PacketGetProtectedBlocks());
         }
-        renderOutlines(evt, player, ReturnProtectedBlocksHelper.blocks, 200, 230, 180);
+        renderOutlines(evt, player, ReturnProtectedBlocksHelper.blocks, 210, 100, 40);
     }
 
     @Override

@@ -13,11 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.config.Configuration;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
@@ -204,31 +204,21 @@ public class GenericWand extends Item implements IEnergyContainerItem {
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.partialTicks;
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.partialTicks;
 
-        boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
+        GL11.glPushAttrib(GL11.GL_CURRENT_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_ENABLE_BIT | GL11.GL_LIGHTING_BIT | GL11.GL_TEXTURE_BIT);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        boolean txt = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_LIGHTING);
 
         GL11.glPushMatrix();
         GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
 
-//        renderLines(coordinates, r/2, g/2, b/2, 2);
-//        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        renderLines(coordinates, r, g, b, 4);
+        renderOutlines(coordinates, r, g, b, 4);
 
         GL11.glPopMatrix();
-
-        if (depth) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-        } else {
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-        }
-        if (txt) {
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-        }
+        GL11.glPopAttrib();
     }
 
-    private static void renderLines(Set<Coordinate> coordinates, int r, int g, int b, int thickness) {
+    private static void renderOutlines(Set<Coordinate> coordinates, int r, int g, int b, int thickness) {
         Tessellator tessellator = Tessellator.instance;
 
         tessellator.startDrawing(GL11.GL_LINES);
@@ -243,12 +233,12 @@ public class GenericWand extends Item implements IEnergyContainerItem {
             float y = coordinate.getY();
             float z = coordinate.getZ();
 
-            renderProtectionBlockOutline(tessellator, x, y, z, .0f); // .02f
+            renderBlockOutline(tessellator, x, y, z, .0f); // .02f
         }
         tessellator.draw();
     }
 
-    private static void renderProtectionBlockOutline(Tessellator tessellator, float mx, float my, float mz, float o) {
+    private static void renderBlockOutline(Tessellator tessellator, float mx, float my, float mz, float o) {
         tessellator.addVertex(mx-o, my-o, mz-o);
         tessellator.addVertex(mx+1+o, my-o, mz-o);
         tessellator.addVertex(mx-o, my-o, mz-o);
