@@ -2,34 +2,24 @@ package romelo333.notenoughwands.varia;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ContainerToItemRecipe extends ShapedRecipes {
-    private Object objectToInheritFrom;
+    private Item itemToInheritFrom;
 
     public ContainerToItemRecipe(ItemStack[] grid, int index, ItemStack output) {
         super(3, 3, grid, output);
-        objectToInheritFrom = getObjectFromStack(grid[index].getItem());
+        itemToInheritFrom = grid[index].getItem();
     }
-
-    private Object getObjectFromStack(Item item) {
-        if (item instanceof ItemBlock) {
-            return ((ItemBlock) item).field_150939_a;
-        } else {
-            return item;
-        }
-    }
-
 
     private NBTTagCompound getNBTFromObject(InventoryCrafting inventoryCrafting) {
         for (int i = 0 ; i < inventoryCrafting.getSizeInventory() ; i++) {
             ItemStack stack = inventoryCrafting.getStackInSlot(i);
             if (stack != null && stack.getItem() != null) {
-                Object o = getObjectFromStack(stack.getItem());
-                if (objectToInheritFrom.equals(o)) {
+                Item o = stack.getItem();
+                if (itemToInheritFrom.equals(o)) {
                     return stack.getTagCompound();
                 }
             }
