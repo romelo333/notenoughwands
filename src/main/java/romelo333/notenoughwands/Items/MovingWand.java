@@ -81,7 +81,6 @@ public class MovingWand extends GenericWand {
         }
         list.add("Right click to take a block.");
         list.add("Right click again on block to place it down.");
-        list.add("Mode key (default '=') to switch mode.");
     }
 
     private boolean hasBlock(NBTTagCompound compound) {
@@ -106,8 +105,9 @@ public class MovingWand extends GenericWand {
         return stack;
     }
 
+
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
+    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             NBTTagCompound compound = stack.getTagCompound();
             if (hasBlock(compound)) {
@@ -115,8 +115,9 @@ public class MovingWand extends GenericWand {
             } else {
                 pickup(stack, player, world, x, y, z);
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void place(ItemStack stack, World world, int x, int y, int z, int side) {
