@@ -42,7 +42,7 @@ public class ProtectionWand extends GenericWand{
         if (master) {
             setup("MasterProtectionWand", "masterProtectionWand").xpUsage(0).availability(AVAILABILITY_CREATIVE).loot(0);
         } else {
-            setup("ProtectionWand", "protectionWand").xpUsage(10).availability(AVAILABILITY_CREATIVE).loot(0);
+            setup("ProtectionWand", "protectionWand").xpUsage(50).availability(AVAILABILITY_ADVANCED).loot(1);
         }
         this.master = master;
     }
