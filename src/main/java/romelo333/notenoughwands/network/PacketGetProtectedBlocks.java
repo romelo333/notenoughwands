@@ -42,11 +42,11 @@ public class PacketGetProtectedBlocks implements IMessage,IMessageHandler<Packet
 
         ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
         Set<Coordinate> blocks = new HashSet<Coordinate>();
-        protectedBlocks.fetchProtectedBlocks(blocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, ProtectionWand.blockShowRadius, id);
+        protectedBlocks.fetchProtectedBlocks(blocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, protectionWand.blockShowRadius, id);
         Set<Coordinate> childBlocks = new HashSet<Coordinate>();
         if (id == -1) {
             // Master wand:
-            protectedBlocks.fetchProtectedBlocks(childBlocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, ProtectionWand.blockShowRadius, -2);
+            protectedBlocks.fetchProtectedBlocks(childBlocks, world, (int)player.posX, (int)player.posY, (int)player.posZ, protectionWand.blockShowRadius, -2);
         }
         return new PacketReturnProtectedBlocks(blocks, childBlocks);
     }

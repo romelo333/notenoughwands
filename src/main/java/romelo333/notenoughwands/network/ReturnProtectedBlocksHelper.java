@@ -16,5 +16,4 @@ public class ReturnProtectedBlocksHelper {
         blocks = message.getBlocks();
         childBlocks = message.getChildBlocks();
     }
-
 }

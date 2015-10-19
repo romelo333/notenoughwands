@@ -18,8 +18,10 @@ public class PacketHandler {
         // Server side
         INSTANCE.registerMessage(PacketToggleMode.class, PacketToggleMode.class, nextID(), Side.SERVER);
         INSTANCE.registerMessage(PacketGetProtectedBlocks.class, PacketGetProtectedBlocks.class, nextID(), Side.SERVER);
+        INSTANCE.registerMessage(PacketGetProtectedBlockCount.class, PacketGetProtectedBlockCount.class, nextID(), Side.SERVER);
 
         // Client side
         INSTANCE.registerMessage(PacketReturnProtectedBlocksHandler.class, PacketReturnProtectedBlocks.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(PacketReturnProtectedBlockCountHandler.class, PacketReturnProtectedBlockCount.class, nextID(), Side.CLIENT);
     }
 }

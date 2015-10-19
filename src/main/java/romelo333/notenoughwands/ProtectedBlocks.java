@@ -19,7 +19,8 @@ public class ProtectedBlocks extends WorldSavedData{
     private static ProtectedBlocks instance;
 
     // Persisted data
-    private Map<GlobalCoordinate, Integer> blocks = new HashMap<GlobalCoordinate, Integer>();
+    private Map<GlobalCoordinate, Integer> blocks = new HashMap<GlobalCoordinate, Integer>();       // Map from coordinate -> ID
+    private Map<Integer,Integer> counter = new HashMap<Integer, Integer>(); // Keep track of number of protected blocks per ID
     private int lastId = 1;
 
     public ProtectedBlocks(String name) {
@@ -51,13 +52,35 @@ public class ProtectedBlocks extends WorldSavedData{
         return lastId-1;
     }
 
+    private void decrementProtection(Integer oldId) {
+        int cnt = counter.containsKey(oldId) ? counter.get(oldId) : 0;
+        cnt--;
+        counter.put(oldId, cnt);
+    }
+
+    private void incrementProtection(Integer newId) {
+        int cnt = counter.containsKey(newId) ? counter.get(newId) : 0;
+        cnt++;
+        counter.put(newId, cnt);
+    }
+
+    public int getProtectedBlockCount(int id) {
+        return counter.containsKey(id) ? counter.get(id) : 0;
+    }
+
     public boolean protect(EntityPlayer player, World world, int x, int y, int z, int id) {
         GlobalCoordinate key = new GlobalCoordinate(x, y, z, world.provider.dimensionId);
         if (id != -1 && blocks.containsKey(key)) {
             Tools.error(player, "This block is already protected!");
             return false;
         }
+        if (blocks.containsKey(key)) {
+            // Block is protected but we are using the master wand so we first clear the protection.
+            decrementProtection(blocks.get(key));
+        }
         blocks.put(key, id);
+        incrementProtection(id);
+
         save(world);
         return true;
     }
@@ -72,6 +95,7 @@ public class ProtectedBlocks extends WorldSavedData{
             Tools.error(player, "You have no permission to unprotect this block!");
             return false;
         }
+        decrementProtection(blocks.get(key));
         blocks.remove(key);
         save(world);
         return true;
@@ -104,11 +128,14 @@ public class ProtectedBlocks extends WorldSavedData{
     public void readFromNBT(NBTTagCompound tagCompound) {
         lastId = tagCompound.getInteger("lastId");
         blocks.clear();
+        counter.clear();
         NBTTagList list = tagCompound.getTagList("blocks", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i<list.tagCount();i++){
             NBTTagCompound tc = list.getCompoundTagAt(i);
             GlobalCoordinate block = new GlobalCoordinate(tc.getInteger("x"),tc.getInteger("y"),tc.getInteger("z"),tc.getInteger("dim"));
-            blocks.put(block, tc.getInteger("id"));
+            int id = tc.getInteger("id");
+            blocks.put(block, id);
+            incrementProtection(id);
         }
     }
 
