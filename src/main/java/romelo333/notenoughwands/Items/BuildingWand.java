@@ -9,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -312,8 +313,12 @@ public class BuildingWand extends GenericWand{
     }
 
     private boolean isSuitable(World world, Block block, int meta, Coordinate base, Coordinate offset) {
+        Block destBlock = world.getBlock(offset.getX(), offset.getY(), offset.getZ());
+        if (destBlock == null) {
+            destBlock = Blocks.air;
+        }
         return world.getBlock(base.getX(), base.getY(), base.getZ()) == block && world.getBlockMetadata(base.getX(), base.getY(), base.getZ()) == meta &&
-                world.isAirBlock(offset.getX(), offset.getY(), offset.getZ());
+                destBlock.isReplaceable(world, offset.getX(), offset.getY(), offset.getZ());
     }
 
     private ForgeDirection dir1(ForgeDirection direction) {
