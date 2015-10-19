@@ -27,7 +27,8 @@ import java.util.Map;
 public class MovingWand extends GenericWand {
     private float maxHardness = 50;
     private int placeDistance = 4;
-    private Map<String,Double> blacklisted = new HashMap<String, Double>();
+
+    public Map<String,Double> blacklisted = new HashMap<String, Double>();
 
     public MovingWand() {
         setup("MovingWand", "movingWand").xpUsage(3).availability(AVAILABILITY_NORMAL).loot(5);
@@ -149,25 +150,10 @@ public class MovingWand extends GenericWand {
     }
 
     private void pickup(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
-
         Block block = world.getBlock(x, y, z);
         int meta = world.getBlockMetadata(x, y, z);
-        float hardness = block.getBlockHardness(world, x, y, z);
-        if (hardness > maxHardness){
-            Tools.error(player, "This block is to hard to take.");
-            return;
-        }
-        if (!block.canEntityDestroy(world, x, y, z, player)){
-            Tools.error(player, "You are not allowed to take this block");
-            return;
-        }
-        double cost = 1.0f;
-        String unlocName = block.getUnlocalizedName();
-        if (blacklisted.containsKey(unlocName)) {
-            cost = blacklisted.get(unlocName);
-        }
-        if (cost <= 0.001f) {
-            Tools.error(player, "It is illegal to take this block");
+        double cost = checkPickup(player, world, x, y, z, block, maxHardness, blacklisted);
+        if (cost < 0.0) {
             return;
         }
 

@@ -5,6 +5,7 @@ import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.config.Configuration;
@@ -26,6 +28,7 @@ import romelo333.notenoughwands.varia.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Optional.InterfaceList({
@@ -44,6 +47,29 @@ public class GenericWand extends Item implements IEnergyContainerItem {
     public static int AVAILABILITY_NORMAL = 3;
 
     private static List<GenericWand> wands = new ArrayList<GenericWand>();
+
+    // Check if a given block can be picked up.
+    public static double checkPickup(EntityPlayer player, World world, int x, int y, int z, Block block, float maxHardness, Map<String, Double> blacklisted) {
+        float hardness = block.getBlockHardness(world, x, y, z);
+        if (hardness > maxHardness){
+            Tools.error(player, "This block is to hard to take.");
+            return -1.0f;
+        }
+        if (!block.canEntityDestroy(world, x, y, z, player)){
+            Tools.error(player, "You are not allowed to take this block");
+            return -1.0f;
+        }
+        double cost = 1.0f;
+        String unlocName = block.getUnlocalizedName();
+        if (blacklisted.containsKey(unlocName)) {
+            cost = blacklisted.get(unlocName);
+        }
+        if (cost <= 0.001f) {
+            Tools.error(player, "It is illegal to take this block");
+            return -1.0f;
+        }
+        return cost;
+    }
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {

@@ -46,7 +46,6 @@ public class WrenchChecker {
     }
 
     public static boolean isAWrench(Item item) {
-        System.out.println("item.getClass() = " + item.getClass());
         for (Class c : wrenchClasses) {
             if (c.isAssignableFrom(item.getClass())) {
                 return true;
