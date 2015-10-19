@@ -120,6 +120,11 @@ public class MovingWand extends GenericWand {
         return false;
     }
 
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float sx, float sy, float sz) {
+        return true;
+    }
+
     private void place(ItemStack stack, World world, int x, int y, int z, int side) {
         int xx = x + ForgeDirection.getOrientation(side).offsetX;
         int yy = y + ForgeDirection.getOrientation(side).offsetY;
