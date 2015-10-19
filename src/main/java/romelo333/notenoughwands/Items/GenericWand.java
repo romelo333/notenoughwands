@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +24,7 @@ import org.lwjgl.opengl.GL12;
 import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ModItems;
 import romelo333.notenoughwands.NotEnoughWands;
+import romelo333.notenoughwands.ProtectedBlocks;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
@@ -52,13 +54,19 @@ public class GenericWand extends Item implements IEnergyContainerItem {
     public static double checkPickup(EntityPlayer player, World world, int x, int y, int z, Block block, float maxHardness, Map<String, Double> blacklisted) {
         float hardness = block.getBlockHardness(world, x, y, z);
         if (hardness > maxHardness){
-            Tools.error(player, "This block is to hard to take.");
+            Tools.error(player, "This block is to hard to take!");
             return -1.0f;
         }
         if (!block.canEntityDestroy(world, x, y, z, player)){
-            Tools.error(player, "You are not allowed to take this block");
+            Tools.error(player, "You are not allowed to take this block!");
             return -1.0f;
         }
+        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
+        if (protectedBlocks.isProtected(world, x, y, z)) {
+            Tools.error(player, "This block is protected. You cannot take it!");
+            return -1.0f;
+        }
+
         double cost = 1.0f;
         String unlocName = block.getUnlocalizedName();
         if (blacklisted.containsKey(unlocName)) {

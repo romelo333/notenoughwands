@@ -20,6 +20,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.ForgeDirection;
 import romelo333.notenoughwands.Config;
+import romelo333.notenoughwands.ProtectedBlocks;
 import romelo333.notenoughwands.varia.Coordinate;
 import romelo333.notenoughwands.varia.Tools;
 
@@ -125,6 +126,12 @@ public class SwappingWand extends GenericWand {
 
         if (Math.abs(hardness-blockHardness) >= hardnessDistance) {
             Tools.error(player, "The hardness of this blocks differs too much to swap!");
+            return;
+        }
+
+        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
+        if (protectedBlocks.isProtected(world, x, y, z)) {
+            Tools.error(player, "This block is protected. You cannot replace it!");
             return;
         }
 
