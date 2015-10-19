@@ -68,6 +68,14 @@ public class ProtectedBlocks extends WorldSavedData{
         return counter.containsKey(id) ? counter.get(id) : 0;
     }
 
+    private int getMaxProtectedBlocks(int id) {
+        if (id == -1) {
+            return ModItems.masterProtectionWand.maximumProtectedBlocks;
+        } else {
+            return ModItems.protectionWand.maximumProtectedBlocks;
+        }
+    }
+
     public boolean protect(EntityPlayer player, World world, int x, int y, int z, int id) {
         GlobalCoordinate key = new GlobalCoordinate(x, y, z, world.provider.dimensionId);
         if (id != -1 && blocks.containsKey(key)) {
@@ -78,6 +86,13 @@ public class ProtectedBlocks extends WorldSavedData{
             // Block is protected but we are using the master wand so we first clear the protection.
             decrementProtection(blocks.get(key));
         }
+
+        int max = getMaxProtectedBlocks(id);
+        if (max != 0 && getProtectedBlockCount(id) >= max) {
+            Tools.error(player, "Maximum number of protected blocks reached!");
+            return false;
+        }
+
         blocks.put(key, id);
         incrementProtection(id);
 
