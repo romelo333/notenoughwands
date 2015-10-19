@@ -4,9 +4,15 @@ package romelo333.notenoughwands;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.RecipeSorter;
 import romelo333.notenoughwands.Items.GenericWand;
+import romelo333.notenoughwands.varia.ContainerToItemRecipe;
 
 public class ModCrafting {
+    static {
+        RecipeSorter.register("NotEnoughWands:containertoitem", ContainerToItemRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+    }
+
 
     public static void init() {
         GameRegistry.addRecipe(new ItemStack(ModItems.wandCore), "bn ", "nbn", " nb", 'b', Items.blaze_rod,'n', Items.gold_nugget);

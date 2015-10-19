@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -16,6 +17,7 @@ import net.minecraftforge.common.config.Configuration;
 import romelo333.notenoughwands.Config;
 import romelo333.notenoughwands.ProtectedBlocks;
 import romelo333.notenoughwands.network.*;
+import romelo333.notenoughwands.varia.ContainerToItemRecipe;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.List;
@@ -156,7 +158,32 @@ public class ProtectionWand extends GenericWand{
             GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.comparator, 'e', Items.nether_star, 'w', wandcore);
         } else {
             GameRegistry.addRecipe(new ItemStack(this), "re ", "ew ", "  w", 'r', Items.comparator, 'e', Items.ender_eye, 'w', wandcore);
+            GameRegistry.addRecipe(new ContainerToItemRecipe(new ItemStack[] {
+                    new ItemStack(this), new ItemStack(Items.ender_eye), null,
+                    new ItemStack(Items.ender_eye), new ItemStack(wandcore), null,
+                    null, null, new ItemStack(wandcore)
+            }, 0, new ItemStack(this)));
         }
+    }
+
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return !master;
+    }
+
+    @Override
+    public Item getContainerItem() {
+        return this;
+    }
+
+    @Override
+    public ItemStack getContainerItem(ItemStack stack) {
+        if (hasContainerItem(stack) && stack.hasTagCompound()) {
+            ItemStack container = new ItemStack(getContainerItem());
+            container.setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
+            return container;
+        }
+        return null;
     }
 
 }
