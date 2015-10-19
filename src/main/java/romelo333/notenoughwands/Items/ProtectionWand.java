@@ -25,7 +25,8 @@ public class ProtectionWand extends GenericWand{
     public static final int MODE_FIRST = 0;
     public static final int MODE_PROTECT = 0;
     public static final int MODE_UNPROTECT = 1;
-    public static final int MODE_LAST = MODE_UNPROTECT;
+    public static final int MODE_CLEAR = 2;
+    public static final int MODE_LAST = MODE_CLEAR;
 
     public int blockShowRadius = 10;
     public int maximumProtectedBlocks = 16;
@@ -34,7 +35,7 @@ public class ProtectionWand extends GenericWand{
 
 
     public static final String[] descriptions = new String[] {
-            "protect", "unprotect"
+            "protect", "unprotect", "clear all"
     };
 
     public ProtectionWand(boolean master) {
@@ -119,7 +120,8 @@ public class ProtectionWand extends GenericWand{
         if (!world.isRemote) {
             ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
             int id = getOrCreateId(stack, world, protectedBlocks);
-            if (getMode(stack) == MODE_PROTECT) {
+            int mode = getMode(stack);
+            if (mode == MODE_PROTECT) {
                 if (!checkUsage(stack, player, 1.0f)) {
                     return true;
                 }
@@ -127,10 +129,13 @@ public class ProtectionWand extends GenericWand{
                     return true;
                 }
                 registerUsage(stack, player, 1.0f);
-            } else {
+            } else if (mode == MODE_UNPROTECT) {
                 if (!protectedBlocks.unprotect(player, world, x, y, z, id)) {
                     return true;
                 }
+            } else {
+                int cnt = protectedBlocks.clearProtections(world, id);
+                Tools.notify(player, "Cleared " + cnt + " protected blocks");
             }
         }
         return true;

@@ -11,6 +11,7 @@ import romelo333.notenoughwands.varia.GlobalCoordinate;
 import romelo333.notenoughwands.varia.Tools;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,6 +115,25 @@ public class ProtectedBlocks extends WorldSavedData{
         blocks.remove(key);
         save(world);
         return true;
+    }
+
+    public int clearProtections(World world, int id) {
+        Set<GlobalCoordinate> toRemove = new HashSet<GlobalCoordinate>();
+        for (Map.Entry<GlobalCoordinate, Integer> entry : blocks.entrySet()) {
+            if (entry.getValue() == id) {
+                toRemove.add(entry.getKey());
+            }
+        }
+
+        int cnt = 0;
+        for (GlobalCoordinate coordinate : toRemove) {
+            cnt++;
+            blocks.remove(coordinate);
+        }
+        counter.put(id, 0);
+
+        save(world);
+        return cnt;
     }
 
     public boolean isProtected(World world, int x, int y, int z){
