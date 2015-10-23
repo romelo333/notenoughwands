@@ -15,15 +15,23 @@ import java.util.List;
 public class ForgeEventHandlers {
     @SubscribeEvent
     public void onBlockBreakEvent (BlockEvent.BreakEvent event){
-        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(event.world);
-        if (protectedBlocks.isProtected(event.world,event.x,event.y,event.z)){
+        World world = event.world;
+        if (world.isRemote) {
+            return;
+        }
+        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
+        if (protectedBlocks.isProtected(world, event.x, event.y, event.z)){
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public void onDetonate(ExplosionEvent.Detonate event) {
-        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(event.world);
+        World world = event.world;
+        if (world.isRemote) {
+            return;
+        }
+        ProtectedBlocks protectedBlocks = ProtectedBlocks.getProtectedBlocks(world);
         if (!protectedBlocks.hasProtections()) {
             return;
         }
@@ -34,7 +42,7 @@ public class ForgeEventHandlers {
         int i = 0;
         while (i < affectedBlocks.size()) {
             ChunkPosition block = affectedBlocks.get(i);
-            if (protectedBlocks.isProtected(event.world, block.chunkPosX, block.chunkPosY, block.chunkPosZ)) {
+            if (protectedBlocks.isProtected(world, block.chunkPosX, block.chunkPosY, block.chunkPosZ)) {
                 affectedBlocks.remove(i);
             } else {
                 i++;
