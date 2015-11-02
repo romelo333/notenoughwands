@@ -23,7 +23,10 @@ public class Tools {
         player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + msg));
     }
 
-    public static boolean consumeInventoryItem(Item item, int meta, InventoryPlayer inv) {
+    public static boolean consumeInventoryItem(Item item, int meta, InventoryPlayer inv, EntityPlayer player) {
+        if (player.capabilities.isCreativeMode) {
+            return true;
+        }
         int i = finditem(item, meta, inv);
 
         if (i < 0) {

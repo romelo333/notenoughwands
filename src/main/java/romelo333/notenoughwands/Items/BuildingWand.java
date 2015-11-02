@@ -98,7 +98,7 @@ public class BuildingWand extends GenericWand{
             if (!checkUsage(stack, player, 1.0f)) {
                 break;
             }
-            if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory)) {
+            if (Tools.consumeInventoryItem(Item.getItemFromBlock(block), meta, player.inventory,player)) {
                 Tools.playSound(world, block.stepSound.getBreakSound(), coordinate.getX(), coordinate.getY(), coordinate.getZ(), 1.0f, 1.0f);
                 world.setBlock(coordinate.getX(), coordinate.getY(), coordinate.getZ(), block, meta, 2);
                 player.openContainer.detectAndSendChanges();
@@ -187,8 +187,10 @@ public class BuildingWand extends GenericWand{
             }
         }
         if (cnt > 0) {
-            Tools.giveItem(world, player, block, meta, cnt, x, y, z);
-            player.openContainer.detectAndSendChanges();
+            if (!player.capabilities.isCreativeMode) {
+                Tools.giveItem(world, player, block, meta, cnt, x, y, z);
+                player.openContainer.detectAndSendChanges();
+            }
         }
     }
 
@@ -282,7 +284,8 @@ public class BuildingWand extends GenericWand{
                 dirB = dirA.getOpposite();
                 if (!isSuitable(world, block, meta, base.add(dirA), offset.add(dirA)) ||
                         !isSuitable(world, block, meta, base.add(dirB), offset.add(dirB))) {
-                    return;
+                    dirA = dir3(direction);
+                    dirB = dirA.getOpposite();
                 }
             }
         }
@@ -344,6 +347,21 @@ public class BuildingWand extends GenericWand{
             case NORTH:
             case SOUTH:
                 return ForgeDirection.DOWN;
+            case WEST:
+            case EAST:
+                return ForgeDirection.SOUTH;
+        }
+        return null;
+    }
+
+    private ForgeDirection dir3(ForgeDirection direction) {
+        switch (direction) {
+            case DOWN:
+            case UP:
+                return ForgeDirection.SOUTH;
+            case NORTH:
+            case SOUTH:
+                return ForgeDirection.WEST;
             case WEST:
             case EAST:
                 return ForgeDirection.SOUTH;
