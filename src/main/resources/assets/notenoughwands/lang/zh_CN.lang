@@ -7,6 +7,7 @@ item.MovingWand.name=移动魔杖
 item.ProtectionWand.name=防爆魔杖
 item.MasterProtectionWand.name=大师防爆魔杖
 item.DisplacementWand.name=位移魔杖
+item.AccelerationWand.name=Acceleration Wand
 item.WandCore.name=魔杖核心
 item.AdvancedWandCore.name=闪耀的魔杖核心
 

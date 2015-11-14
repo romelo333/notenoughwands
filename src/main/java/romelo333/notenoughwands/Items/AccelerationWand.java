@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
@@ -32,7 +31,7 @@ public class AccelerationWand extends GenericWand {
     public static final float[] cost = new float[] { 1.0f, 2.0f, 5.0f};
 
     public AccelerationWand() {
-        setup("AccelerationWand", "accelerationWand").xpUsage(3).availability(AVAILABILITY_NORMAL).loot(6);
+        setup("AccelerationWand", "accelerationWand").xpUsage(5).availability(AVAILABILITY_ADVANCED).loot(2);
     }
 
     private Random random = new Random();
@@ -40,10 +39,7 @@ public class AccelerationWand extends GenericWand {
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b) {
         super.addInformation(stack, player, list, b);
-        NBTTagCompound compound = stack.getTagCompound();
-        if (compound != null) {
-            list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[compound.getInteger("mode")]);
-        }
+        list.add(EnumChatFormatting.GREEN + "Mode: " + descriptions[getMode(stack)]);
         list.add("Right click on block to speed up ticks.");
         list.add("Mode key (default '=') to change speed.");
     }
@@ -72,6 +68,7 @@ public class AccelerationWand extends GenericWand {
         }
         return true;
     }
+
     @Override
     public void toggleMode(EntityPlayer player, ItemStack stack) {
         int mode = getMode(stack);
@@ -89,7 +86,7 @@ public class AccelerationWand extends GenericWand {
 
     @Override
     protected void setupCraftingInt(Item wandcore) {
-        GameRegistry.addRecipe(new ItemStack(this), "gg ", "gw ", "  w", 'g', Items.bone, 'w', wandcore);
+        GameRegistry.addRecipe(new ItemStack(this), "gg ", "gw ", "  w", 'g', new ItemStack(Items.dye, 1, 15), 'w', wandcore);
     }
 
 }
