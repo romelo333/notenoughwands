@@ -1,0 +1,20 @@
+item.SwappingWand.name=Baguette d'Échanges
+item.TeleportationWand.name=Baguette de Téléportation
+item.CapturingWand.name=Baguette de Captation
+item.BuildingWand.name=Baguette de Construction
+item.IlluminationWand.name=Baguette d'Illumination
+item.MovingWand.name=Baguette de Movement
+item.ProtectionWand.name=Baguette de Protection
+item.MasterProtectionWand.name=Baguette de Protection Maîtresse
+item.DisplacementWand.name=Baguette de Déplacement
+item.AccelerationWand.name=Baguette d'Accélération
+item.WandCore.name=Cœur de Baguette
+item.AdvancedWandCore.name=Cœur de Baguette Élevé
+
+tile.blockLight.name=Orbe d'Illumination
+
+
+key.modifier=Modificateur des Baguette
+key.categories.notenoughwands=Not Enough Wands
+
+itemGroup.NotEnoughWands=Not Enough Wands
