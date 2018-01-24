@@ -1,0 +1,20 @@
+item.SwappingWand.name=عصاة تبديل
+item.TeleportationWand.name=عصاة تحرك تخاطري
+item.CapturingWand.name=عصاة قبض
+item.BuildingWand.name=عصاة بناء
+item.IlluminationWand.name=عصاة إنارة
+item.MovingWand.name=عصاة تحريك
+item.ProtectionWand.name=عصاة حماية
+item.MasterProtectionWand.name=عصاة حماية مسيطرة
+item.DisplacementWand.name=عصاة إقتلاع
+item.AccelerationWand.name=عصاة تسريع
+item.WandCore.name=قلب عصاة
+item.AdvancedWandCore.name=قلب عصاة متقدم
+
+tile.blockLight.name=كرة منيرة
+
+
+key.modifier=معدل عصاة
+key.categories.notenoughwands=Not Enough Wands
+
+itemGroup.NotEnoughWands=Not Enough Wands
