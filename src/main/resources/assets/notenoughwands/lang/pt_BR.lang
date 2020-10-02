@@ -1,0 +1,20 @@
+item.SwappingWand.name=Varinha de Troca
+item.TeleportationWand.name=Varinha de Teleporte
+item.CapturingWand.name=Varinha de Captura
+item.BuildingWand.name=Varinha de Construção
+item.IlluminationWand.name=Varinha de Iluminação
+item.MovingWand.name=Varinha de Movimento
+item.ProtectionWand.name=Varinha de Proteção
+item.MasterProtectionWand.name=Varinha de Proteção Superior
+item.DisplacementWand.name=Varinha de Deslocamento
+item.AccelerationWand.name=Varinha de Aceleração
+item.WandCore.name=Núcleo de Varinha
+item.AdvancedWandCore.name=Núcleo de Varinha Avançado
+
+tile.blockLight.name=Orbe Iluminadora
+
+
+key.modifier=Modificador de Varinha
+key.categories.notenoughwands=Not Enough Wands
+
+itemGroup.NotEnoughWands=Not Enough Wands
